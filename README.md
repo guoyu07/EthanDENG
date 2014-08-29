@@ -1,7 +1,7 @@
 EthanDeng Stack 
 ===================
 
-The Stack of LaTeX and some other resource, for example, the markdown files, md files, image of our posts.
+The Stack of LaTeX and some other resources, for example, the markdown files, md files, image of our posts.
 
 For more info please visit:
 
