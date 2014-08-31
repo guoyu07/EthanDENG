@@ -1,0 +1,21 @@
+\documentclass[tikz,border=4pt]{standalone}
+
+\usepackage{mathpazo}
+\newcommand*{\num}{pi}
+ % define the plot style and the axis style
+\tikzset{elegant/.style={smooth,thick,samples=50,cyan}}
+\tikzset{eaxis/.style={->,>=stealth}}
+
+\begin{document}
+
+\begin{tikzpicture}
+     % draw the axis
+    \draw[eaxis] (-\num,0) -- (\num,0) node[below] {$x$};
+    \draw[eaxis] (0,-\num) -- (0,\num) node[above] {$f(x)$};
+     % draw the function (piecewise)
+    \draw[elegant,domain=-\num:-1/\num] plot(\x,{1/\x});
+    \draw[elegant,domain=1/\num:\num] plot(\x,{1/\x});
+    \draw[elegant,orange,domain=-\num:\num] plot(\x,{sin(\x r)});
+\end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,36 @@
+\documentclass[border=3pt]{standalone}
+
+\usepackage{mathpazo}
+\usepackage{pgfplots}% This uses tikz
+\pgfplotsset{compat=newest}% use newest version
+
+\newcommand*{\A}{2}
+\newcommand*{\num}{2.2}
+
+ % X 的参数方程
+\pgfmathdeclarefunction{SolutionX}{1}{%
+    \pgfmathparse{\A*(cos(deg(\t)))^3}%
+}
+
+ % Y 的参数方程
+\pgfmathdeclarefunction{SolutionY}{1}{%
+    \pgfmathparse{\A*(sin(deg(\t)))^3}%
+}
+
+ % define elegant style
+\tikzset{elegant/.style={smooth, red, thick, samples=101}}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \begin{axis}[axis lines=middle,
+                 xmin=-\num, xmax = \num,
+                 ymin=-\num, ymax = \num,
+                 ylabel=$f(x)$,
+                 xlabel=$x$]
+        \addplot[elegant,variable=\t, domain=-2*pi:0]
+            ({SolutionX(\t)},{SolutionY(\t)});
+    \end{axis}
+\end{tikzpicture}
+
+\end{document}

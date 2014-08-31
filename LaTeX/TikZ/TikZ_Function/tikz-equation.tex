@@ -1,0 +1,25 @@
+\documentclass[tikz,border=3pt]{standalone}
+
+\usepackage{mathpazo}
+\newcommand{\num}{2.2}
+ % define the style elegant
+\tikzset{elegant/.style={domain=-2:2,thick,samples=201,magenta,line cap=rect,line join=bevel}}
+
+
+\begin{document}
+
+\begin{tikzpicture}[>=stealth]
+    % draw the axis
+    \draw[->] (-\num,0) -- (\num,0) node[above] {$x$};
+    \draw[->] (0,-\num) -- (0,\num) node[right] {$y$};
+    % draw the part above of x axis
+    \draw[elegant] plot (\x,{(2^(2/3) - (abs(\x))^(2/3) )^(3/2)});
+    % draw the part below of x axis
+    \draw[elegant] plot (\x,{-(2^(2/3) - (abs(\x))^(2/3) )^(3/2)});
+    \foreach \x/\xtext in {-2/-2, -1/-1, 1/1, 2/2}
+    \draw[shift={(\x,0)}] (0pt,2pt) -- (0pt,-2pt) node[below] {\small $\xtext$};
+     \foreach \y/\ytext in {-2/-2, -1/-1, 1/1, 2/2}
+    \draw[shift={(0,\y)}] (2pt,0pt) -- (-2pt,0pt) node[left] {$\ytext$};
+\end{tikzpicture}
+
+\end{document}
