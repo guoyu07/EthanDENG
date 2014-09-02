@@ -1,0 +1,215 @@
+%!TEX program = xelatex
+\RequirePackage[l2tabu, orthodox]{nag}
+\documentclass{book}
+
+% 9 LaTeX packages everyone should use
+\usepackage{amsmath}
+\usepackage[a4paper]{geometry}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
+\usepackage{cleveref}
+
+\usepackage[scaled=0.92]{helvet}    % set Helvetica as the sans-serif font
+\renewcommand{\rmdefault}{ptm}      % set Times as the default text font
+% The following loads mtpro and defines some common MTPro options [2, 4]
+\usepackage[subscriptcorrection,slantedGreek,nofontinfo]{mtpro2}
+\usepackage{xparse}
+\usepackage{xcolor}
+\usepackage[Lenny]{fncychap}
+% \definecolor{myblue}{RGB}{100,0,239}
+\everymath\expandafter{\the\everymath \color{magenta}}
+\everydisplay\expandafter{\the\everydisplay \color{magenta}}
+
+\begin{document}
+
+\chapter{A Primer on Continuous-time Economic Dynamics}
+
+\section{Linear Differential Equation Systems} % (fold)
+\label{sec:linear_differential_equation_systems}
+
+\subsection{Simplest case} % (fold)
+\label{sub:simplest_case}
+
+We begin with the simple linear first-order differential equation,
+
+\begin{equation*}
+\dot{x}=ax, \quad x(0)=x_{0}
+\end{equation*}
+
+The general solution is
+\begin{equation*}
+x(t)=c_{0}e^{at},
+\end{equation*}
+and the initial condition is satisfied by the particular solution,
+\begin{equation*}
+x(t)=x_{0}e^{at}
+\end{equation*}
+The growth rate ofxis given by $a$.
+
+Next, we solve the two-dimensional system given by
+\begin{equation*}
+    \dot{x}=ax,\quad x(0)=x_{0}
+\end{equation*}
+and
+\begin{equation*}
+    \dot{y}=by,\quad y(0)=y_{0}.
+\end{equation*}
+It is useful to write these in matrix form as
+\begin{equation*}
+\begin{bmatrix}
+\dot{x}\\ \dot{y}
+\end{bmatrix}
+=\begin{bmatrix}
+a & 0 \\
+0 & b
+\end{bmatrix}
+\begin{bmatrix}
+x\\
+y
+\end{bmatrix}
+,\quad
+\begin{bmatrix}
+x(0)\\
+y(0)
+\end{bmatrix}
+=\begin{bmatrix}
+x_{0}\\y_{0}
+\end{bmatrix}.
+\end{equation*}
+
+The solution for this two-dimensional system is simply
+\begin{equation*}
+\begin{bmatrix}
+x(t)\\y(t)
+\end{bmatrix}
+=\begin{bmatrix}
+x_{0}e^{at}\\y_{0}e^{bt}
+\end{bmatrix}.
+\end{equation*}
+Each of these problems, the one-dimensional and the two-dimensional, are examples of initialvalue problems. This system possesses a single steady state, $x_{0}=0$ and $y_{0}=0$. A phase diagram plots out $y(t)$ as a function of $x(t)$ for different possible initial values of $x$ and $y$. The resulting locus relating $y$ to $x$ at each time given any particular initial values, $x_{0}$ and $y_{0}$, depicts a trajectory along which $x$ and $y$ move over time. Arrows are usually drawn to depict the direction of motion in the $xy-$plane as $t$ increases.
+
+Consider three cases. In the first, the parameters $a$ and $b$ are both positive. For any initial point, $(x_{0},y_{0})$,  that is not the steady state, a trajectory moves away from the origin. This is the unstable case. In the second, $a$ and $b$ are both negative and any trajectory converges to the steady state. This is the stable case. In this case, trajectories asymptotically approach the steady state parallel to the $y-$axis if $b<a<0$, and conversely. In the third case, one root, $a$ or $b$ is positive and the other is negative. For the example in which $a>0>b$, any trajectory such that $x_{0}=0$ converges to the steady state at the rate $b$. Any trajectory such that $x_{0}\not =0$ moves away from the steady state and converges towards the $x-$axis asymptotically. This is the saddle-path stable case.
+
+Consider an example of saddle-path dynamics such that $a=1$ and $b=−1$. The solution is given by
+
+\begin{equation*}
+\begin{bmatrix}
+x(t)\\
+y(t)
+\end{bmatrix}
+= \begin{bmatrix}
+x_{0}e^{t}\\
+y_{0}e^{-t}
+\end{bmatrix}
+\end{equation*}
+As $t$ grows without bound, $y(t)$ approaches zero as $x(t)$ grows without bound as $x_{0}e^{t}$.
+% subsection simplest_case (end)
+
+\subsection{General case} % (fold)
+\label{sub:general_case}
+
+Let $z$ be an $n-\text{dimensional}$ column vector over the reals and $\dot{z}=Az$ where $z(0) = z_{0}$. The matrix, $A$, is $n\times n$ with constant real coefficients. Impose the restriction that $A$ is nonsingular.
+
+For example, consider the two-dimensional differential equation system,
+\begin{equation*}
+\begin{bmatrix}
+\dot{x}\\
+\dot{y}
+\end{bmatrix}
+= \begin{bmatrix}
+a & c\\
+d & b
+\end{bmatrix}
+\begin{bmatrix}
+x\\
+y
+\end{bmatrix},
+\quad
+\begin{bmatrix}
+x(0)\\
+y(0)
+\end{bmatrix}
+= \begin{bmatrix}
+x_{0}\\
+y_{0}
+\end{bmatrix}.
+\end{equation*}
+
+We handle this problem by changing coordinates. We want to find a change of basis from
+$\begin{bmatrix}
+x\\y
+\end{bmatrix}$
+to a new basis,
+$\begin{bmatrix}
+\hat{x}\\
+\hat{y}
+\end{bmatrix}$
+such that the initial-value problem becomes
+
+\begin{equation*}
+\frac{d}{dt}
+\begin{bmatrix}
+\dot{x}\\
+\dot{y}
+\end{bmatrix}
+= \begin{bmatrix}
+\hat{a} & 0\\
+0 & \hat{b}
+\end{bmatrix}
+\begin{bmatrix}
+\hat{x}\\
+\hat{y}
+\end{bmatrix},
+\quad
+\begin{bmatrix}
+\hat{x}(0)\\
+\hat{y}(0)
+\end{bmatrix}
+= \begin{bmatrix}
+\hat{x}_{0}\\
+\hat{y}_{0}
+\end{bmatrix}.
+\end{equation*}
+which has the solution given in section \ref{sub:simplest_case},
+\begin{equation*}
+\begin{bmatrix}
+\hat{x}\\
+\hat{y}
+\end{bmatrix}
+= \begin{bmatrix}
+\hat{x}_{0}e^{\hat{a}t}\\
+\hat{y}_{0}e^{\hat{b}t}
+\end{bmatrix}
+\end{equation*}
+This is done by finding a nonsingular $2\times 2$ matix, $M$, with constant coefficients such that
+\begin{equation*}
+M^{-1}\begin{bmatrix}
+a & c\\
+d & b
+\end{bmatrix} M
+= \begin{bmatrix}
+\hat{a} & 0\\
+0 & \hat{b}
+\end{bmatrix}
+\end{equation*}
+and
+\begin{equation*}
+\begin{bmatrix}
+x\\
+y
+\end{bmatrix}
+= M \begin{bmatrix}
+\hat{x}\\
+\hat{y}
+\end{bmatrix}.
+\end{equation*}
+We can always do this given the assumptions madeso far. The differential equation systems are
+identical but expressed in different coordinates.
+% subsection general_case (end)
+
+% section linear_differential_equation_systems (end)
+
+\end{document}
