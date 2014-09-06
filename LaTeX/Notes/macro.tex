@@ -1,27 +1,11 @@
 %!TEX program = xelatex
 \RequirePackage[l2tabu, orthodox]{nag}
 \documentclass{book}
-
-% 9 LaTeX packages everyone should use
-\usepackage{amsmath}
-\usepackage[a4paper]{geometry}
-\usepackage{graphicx}
-\usepackage{microtype}
-\usepackage{siunitx}
-\usepackage{booktabs}
-\usepackage[colorlinks=false, pdfborder={0 0 0}]{hyperref}
-\usepackage{cleveref}
-
-\usepackage[scaled=0.92]{helvet}    % set Helvetica as the sans-serif font
-\renewcommand{\rmdefault}{ptm}      % set Times as the default text font
-% The following loads mtpro and defines some common MTPro options [2, 4]
-\usepackage[subscriptcorrection,slantedGreek,nofontinfo]{mtpro2}
-\usepackage{xparse}
-\usepackage{xcolor}
+\input{essential.tex}
+\input{fonts.tex}
+\input{colormath.tex}
 \usepackage[Lenny]{fncychap}
-% \definecolor{myblue}{RGB}{100,0,239}
-\everymath\expandafter{\the\everymath \color{magenta}}
-\everydisplay\expandafter{\the\everydisplay \color{magenta}}
+
 
 \begin{document}
 
