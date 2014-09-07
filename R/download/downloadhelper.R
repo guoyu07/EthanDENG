@@ -56,3 +56,18 @@ downloader <- function(urlpre, index, transform=FALSE , ndigits = 2, filepre = "
     }
 }
 
+tdownloader <- function(url,index){
+    medfile <- strsplit(url,"\\/",fixed=FALSE)
+    finalfile <- medfile[[1]][length(medfile[[1]])]
+    urlpre <- substr(url,1,nchar(url)-nchar(finalfile)) # option 1
+    filesplit <- strsplit(finalfile,"\\.",fixed=F)[[1]]
+    filetype <- filesplit[2] # option 6
+    fchar <- strsplit(filesplit[1],"[0-9]+",fixed=F)
+    filepre <- ifelse(is.numeric(index), fchar[[1]], "")
+     # option 5
+    fnum <- strsplit(filesplit[1],"[a-z|A-Z]*",fixed=F)
+    fnumb <- substr(filesplit[1],nchar(fchar[[1]])+1,nchar(fchar[[1]])+length(fnum[[1]])-1)
+    transform <- !nchar(fnumb)==nchar(as.numeric(fnumb)) # option 3
+    ndigits <- nchar(fnumb) # option 4
+    downloader(urlpre,index,transform,ndigits,filepre,filetype)
+}
