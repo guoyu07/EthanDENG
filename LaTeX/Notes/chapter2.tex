@@ -1,0 +1,76 @@
+%!TEX root = macro.tex
+\chapter{Search and Unemployment Insurance}
+In a equilibrium setup: time period $t=0,1,2,\ldots$, one consumption good. A continum of agents
+\begin{equation}
+\mathbb{E}_{0}\sum_{t=0}^{\infty} \beta ^{t} [u(c_{t})-\phi(a_{t})]
+\end{equation}
+where $\beta \in (0,1)$, $u^{\prime} > 0$, $u^{\prime\prime}<0$. And $\phi^{\prime} > 0,\phi^{\prime\prime}>0$ . $a_{t}\in [0,+\infty)$ is the agent\rq s effort.
+
+Search:
+\begin{itemize}
+    \item Any agent, when unemployed, making effort $a_{t}$ in period $t$, finds a job with prob $\pi(a_{t})\in [0,1],\forall\,a_{t}$. Assume $\pi^{\prime} > 0, \pi^{\prime\prime}<0$.
+    \item Unemployed agent didn't generate income.
+    \item Jobs are identical, all pay a constant $y=1$ units of the good in each period.
+    \item Once employed, the agent has in each period an exogenous prob $\delta\in (0,1)$ to be terminated in which case he goes back to labor mkt, unemployed.
+    \item There is a government in the model who runs an umemployment insurance policy which has two dimensions:
+    \begin{itemize}
+        \item $b$: unemployment insurance benefits paid per period to any unemployed worker
+        \item $\tau$: income tax per period on each employed worker
+    \end{itemize}
+\end{itemize}
+
+Question: what is the optimal $(b,\tau)$?
+
+Consider an symmetric steady-state(stationary) equlibrium of the model in which
+\begin{enumerate}
+    \item stationary: all ``equilibrium objects'' are time invariant.
+    \item symmetric: all unemployed workers take the same action in search.
+\end{enumerate}
+
+Describing a-symmetric stationary equilibrium taking $b$ and $\tau$ as given.
+
+Defn: A S-S equilibrium of the model is a vector $\big\{ a^{*},E,U\big\}$, where
+\begin{align*}
+    a^{*} &= \text{equilibrium search effort of the unemployed}\\
+    E     &= \text{measure of employed workers at the begining (end) of the peroid}\\
+    U     &= \text{measure of the unemployed workers \ldots}, E+U=1
+\end{align*}
+such that
+\begin{enumerate}
+\item $a^{*}$ solves the unemployment worker\rq s problem
+\begin{align}
+ V_u   &= \max_{a\in [0,\infty)} \Big\{\pi(a)\big[u(y-\tau)+\beta[\delta V_u+(1-\delta)V_e]\big]+(1-\pi(a))\big[u(b)+\beta V_u\big]-\phi(a)\Big\}\\
+ V_{e} &= u(y-\tau) +\beta\big\{\delta V_{u}+(1-\delta)V_{e}\big\}
+\end{align}
+\item $E_{t}=\text{const.}$ in equlibrium.
+\begin{gather}
+E_{t+1} = E_{t}(1-\delta)+(1-E_{t}) \pi(a^{*}) = E_{t}.\\
+E(1-\delta)+(1-E)\pi(a^{*}) = E.\label{flow out and in}\\
+\delta E = \pi(a^{*}) (1-E). \label{flow out and in}
+\end{gather}
+The left side of \cref{flow out and in} is flow out of employment, and the right side is flow into the employment.
+\end{enumerate}
+
+Rewrite as：
+\begin{align}
+V_{u} &= \max_{a\in [0,\infty)} \Big\{\pi(a) V_{e} + (1-\pi(a))\big[u(b)+\beta V_{u}\big]\Big\}\label{prime1}\\
+\big\(1-\beta(1-\delta)\big\) V_{e} &= u(y-\tau) +\beta \delta V_{u}\label{prime2}\\
+\delta E &= \pi(a^{*}) (1-E)\label{prime3}
+\end{align}
+
+FOC for \cref{prime1}
+\begin{align}
+\pi^{\prime}(a)\big[V_{e}-\beta V_{u}-u(b)\big] &= \phi^{\prime}(a)\label{4}\\
+V_{e}-\beta V_{u} - u(b) &= \frac{\phi^{\prime}(a)}{\pi^{\prime}(a)}\label{prime4}
+\end{align}
+
+Plug \cref{prime4} into \cref{prime1}
+\begin{align}
+V_{u} & = \pi(a^{*})\big[V_{e}-\beta V_{u}-u(b)\big]+u(b)+\beta V_{u} -\phi(a^{*})\\
+      & = \pi(a^{*})\frac{\phi^{\prime}(a^{*})}{\pi^{\prime}(a^{*})}+u(b)+\beta V_{u}-\phi(a^{*})
+\end{align}
+
+Then we have
+\begin{equation}
+    (1-\beta) V_{u}-u(b)=\pi(a^{*})\frac{\phi^{\prime}(a^{*})}{\pi^{\prime}(a^{*})}-\phi(a^{*})
+\end{equation}

@@ -1,3 +1,6 @@
+# Copy Right by Ethan Deng (http://ddswhu.com)
+# Email: ddswhu@gmail.com
+# Last Modification: 2014-9-15
 # deteck whether the downloader pkg has been installed
 # if not, then install the pkg
 # otherwise, return the information that the pkg is not installed
