@@ -59,7 +59,7 @@ morekeywords={pkgtest,url,index,filepre,urlpre,transform,ndigits,filetype,downlo
 \maketitle
 \section{功能介绍}
 
-本 R 文件（\href{http://stack.ddswhu.com/R/download/downloadhelper.R}{DownloadHelper.R} 简称 DH）主要功能是批量下载相近文件名或者有文件名列表的文件。原则上 DH 支持所有的文件格式，经过测试的文件类型有：\textsf{PDF} 文件， \textsf{Excel} 文件，\textsf{txt} 纯文本文件 ， \textsf{LaTeX} 文件，\textsf{R} 文件， \textsf{Matlab} 文件，\textsf{MP3} 文件。DH 定义了四个函数，用户只需要使用最外层的函数即可批量下载相似地址的文件。
+本 R 文件（\href{http://stack.ddswhu.com/R/download/downloadhelper.R}{DownloadHelper.R} 简称 DH）主要功能是批量下载相近文件名或者有文件名列表的文件。原则上 DH 支持所有的文件格式，经过测试的文件类型有：\textsf{PDF} 文件， \textsf{Excel} 文件，\textsf{txt} 纯文本文件 ， \textsf{LaTeX} 文件，\textsf{R} 文件， \textsf{Matlab} 文件，\textsf{MP3} 文件。DH 定义了四个函数，用户只需要使用最外层的函数 downloader 或者 tdownloader 即可批量下载相似地址的文件。
 
 \section{函数说明}
 
@@ -74,7 +74,7 @@ DH 定义了如下四个函数：
 
 \subsection{pkgtest 函数说明}
 
-其中 \textsf{pkgtest} 用于检测函数是否已经安装，如果没有，则进行安装。由于文件下载需要借助 \textsf{downloader} 宏包，所以在使用 \textsf{downloader} 之前需要检测宏包是否安装，当然用户不需要自行检察。\textsf{downloader} 函数自动调用 \textsf{pkgtest} 函数。示例如下
+其中 \textsf{pkgtest} 函数用于检测宏包是否安装，如果没有，则进行安装。由于 DH 需要借助 \textsf{downloader} 宏包，所以在使用 \textsf{downloader} 之前需要检测宏包是否安装，用户不需要自行检查。\textsf{downloader} 函数会自动调用 \textsf{pkgtest} 函数。\textsf{pkgtest} 使用示例如下
 
 \begin{lstlisting}
 pkgtest("xtable")
@@ -84,7 +84,7 @@ pkgtest("xtable")
 
 \subsection{transform 函数说明}
 
-有时候我们会碰到文件的下载地址可能如下形式 \lstinline{~/chap002.pdf}，此地址文件索引包含的是 \lstinline{002} 而不是 \lstinline{2}，为了考虑这种情况，我们定义了 \textsf{transform} 函数，用以把普通数字转换成统一位数（不够位数补零）的数字格式，也即 \lstinline{2} 转化为 \lstinline{002}。这个函数有两个参数，分别为 \lstinline{index} 和 \lstinline{ndigits}，第一个参数表示需要转换的数字，可以是向量。第二个参数是转换后数字的位数（也即转换后数字的长度，比如 002 位数为 3）。示例如下
+有时候我们可能会碰到如下形式的文件下载地址 \lstinline{~/chap002.pdf}，此地址文件索引包含的是 \lstinline{002} 而不是 \lstinline{2}。考虑到这种情况，我们定义了 \textsf{transform} 函数，用以把普通数字转换成统一位数（不够位数则补零）的数字格式，也即 \lstinline{2} 转化为 \lstinline{002}。这个函数有两个参数，分别为 \lstinline{index} 和 \lstinline{ndigits}，第一个参数表示需要转换的数字，也可以是向量。第二个参数是转换后数字的位数（也即转换后数字的长度，比如 002 位数为 3）。示例如下
 \begin{lstlisting}
 index <- 1:24
 transform(index,ndigits=3)
@@ -103,21 +103,21 @@ transform(index,ndigits=3)
     \item filetype：字符参数，文件类型，文件拓展名，默认 \lstinline{filetype="pdf"}。
 \end{itemize}
 
-我们用一个例子来解释上面的参数，比如，现在要下载 \href{http://www.math.upenn.edu/~guffin/teaching/fall10/}{http://www.math.upenn.edu/~guffin/teaching/fall10/} 下 lectures 的课件，课件的地址为 \href{http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/lecture-01.pdf}{http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/lecture-01.pdf}，我们对这几个参数一一解释。
+我们用一个例子来解释上面的参数。比如，现在要下载 \href{http://www.math.upenn.edu/~guffin/teaching/fall10/}{http://www.math.upenn.edu/~guffin/teaching/fall10/} 下 lectures 的课件，课件的地址为 \href{http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/lecture-01.pdf}{http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/lecture-01.pdf}，我们对这几个参数一一解释。
 
-\lstinline{urlpre} 是指下载文件地址的前部分，大部分情况下，都是最后一个斜杠的之前的内容（含斜杠）。在我们的这个例子中，\lstinline{urlpre = "http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/"}，
+\lstinline{urlpre} 是指下载文件地址中不含文件名部分，大部分情况下，都是最后一个斜杠的之前的内容（含斜杠）。在我们的这个例子中，\lstinline{urlpre = "http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/"}，
 
-\lstinline{index} 是指我们需要下载文件名的索引，比如这里文件名分别为 01.pdf--32.pdf，则 \lstinline{index = 1:32}。当然，可能有时候并不是顺序，则可以使用向量表示，可以为字符向量或者数值向量。字符向量比如 \lstinline{index = c("hello","rintro","fname-esim")}，也就是文件名的一个列表（不含拓展名）。
+\lstinline{index} 是指下载文件的文件名的索引，比如这里文件名分别为 01.pdf--32.pdf，则 \lstinline{index = 1:32}。当然，可能有时候并不是顺序，则可以使用向量表示。\lstinline{index} 可以为字符向量或者数值向量。字符向量比如 \lstinline{index = c("hello","rintro","fname-esim")}，也即文件名的一个列表（不含拓展名）。
 
-\lstinline{transform} 是个逻辑值参数，可选项有 \lstinline{TRUE} 和 \lstinline{FALSE}，前者表示进行数字格式转换，比如此例中，由于下载地址中是 \lstinline{01.pdf}，需要将 \lstinline{1} 转换成 \lstinline{01} 这类形式，所以这个例子中 \lstinline{transform = TRUE}。
+\lstinline{transform} 是个逻辑值参数，可选项有 \lstinline{TRUE} 和 \lstinline{FALSE}，前者表示进行数字格式转换，比如此例中，由于下载地址中是 \lstinline{01.pdf}，需要将 \lstinline{1} 转换成 \lstinline{01} 这种形式，所以这个例子中 \lstinline{transform = TRUE}。
 
-\lstinline{ndigits} 表示需要转换的位数，当然，只在 \lstinline{transform = TRUE} 时候才会生效。在我们这个例子中，由于转换之后为 \lstinline{01}，所以位数为 2，\lstinline{ndigits = 2}。
+\lstinline{ndigits} 表示需要转换的位数，当然，只在 \lstinline{transform = TRUE} 时候才会生效。在我们这个例子中，由于索引转换之后为 \lstinline{01}，所以位数为 2，\lstinline{ndigits = 2}。默认地，
 
 \lstinline{filepre} 表示文件名前缀，字符参数，在我们这个例子中，文件名前缀参数为 \lstinline{filepre = "lecture-"}。
 
-\lstinline{filetype} 字符参数，表示文件类型，准确来说应该是文件名后缀，在本例中，\lstinline{filetype = "pdf"}，注意必须要用双引号。
+\lstinline{filetype} 字符参数，表示文件类型，准确来说应该是文件名后缀，在本例中，\lstinline{filetype = "pdf"}，注意：必须要用双引号。
 
-所以综合起来完整的例子如下
+综合起来，完整的例子如下
 \begin{lstlisting}
 source("downloadhelper.R")
 urlpre <- "http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/"
