@@ -1,0 +1,42 @@
+\documentclass[11pt]{dhandout}
+
+\usepackage[UTF8,space]{ctex}
+\usepackage{mathpazo}
+
+
+\linespread{1.1}
+
+\begin{document}
+\section{How to Use!}
+Download the cls file from the website, put the main file and cls file in the same directory, one example of the main file:
+\begin{verbatim}
+\documentclass{dhandout}
+
+\begin{document}
+
+\section{One Section Example}
+The text of the file goes here.
+
+\end{document}
+\end{verbatim}
+
+\section{使用说明}
+
+从网上下载 cls 类文件，然后将主文件与类文件放在同一个文件夹内，主文件只需要将 documentclass 改为 dhandout ，并且添加中文支持即可。示例如下：
+\begin{verbatim}
+\documentclass{dhandout}
+
+\usepackage[UTF8,space]{ctex}
+
+\begin{document}
+
+使用 ctex 支持中文输入！
+
+\end{document}
+\end{verbatim}
+
+\subsection{备注说明}
+
+此类文件有两个选项，分别为 `colorx`（默认） 与 `nocolorx`，后者可以用于打印。其他选项和 article 的选项一致。
+
+\end{document}
