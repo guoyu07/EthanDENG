@@ -1,0 +1,394 @@
+\documentclass[10pt]{beamer}
+
+\usetheme[menuwidth={0.5\paperwidth}]{erlangen}
+\setbeamercovered{transparent=20}
+\setbeamerfont{frametitle}{series=\bfseries}
+\usepackage[hyperref,UTF8,space]{ctex}
+\hypersetup{colorlinks=false,
+            colorlinks=black,
+            pdfborder=100,
+            citecolor=black}
+\usepackage{mathpazo}
+\usefonttheme{serif}
+\setbeamerfont{block title}{series=\bfseries}
+\usepackage{graphicx}
+
+\renewcommand\contentsname{目录}
+
+\begin{document}
+
+\title[使用 Beamer 制作学术讲稿]{\bfseries 使用 Beamer 制作学术讲稿}
+\subtitle{\small Victory won\rq{}t come to me unless I go to it.}
+\author[Ethan D.]{\small Ethan D \\{\color{erlangenblue}\url{http://ddswhu.com/}}}
+\date{\today}
+% \institute{Fudan University\\
+  % \vspace{-0.2em}{\small Elegant\LaTeX{} } }
+
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+
+
+\begin{frame}{目录安排}
+  \tableofcontents
+\end{frame}
+
+
+\section{缘何}
+\begin{frame}{选择 Beamer}
+\noindent\textbf{Beamer 有哪些好处}
+  \begin{enumerate}
+    \item 学术偏好，就是任性
+    \item 和 \LaTeX{} 搭配，兼容 \LaTeX{} 命令
+    \item 高度可读性与清晰的逻辑
+    \item 输出为 PDF，跨平台显示无差异
+  \end{enumerate}
+\textbf{怎么获取？}
+\begin{enumerate}
+  \item 安装 CTeX Full 版本
+  \item 安装 TeX Live 或者其他发行版
+\end{enumerate}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{}
+\begin{alertblock}{一个简单的例子}
+  \begin{verbatim}
+  \documentclass{beamer}
+  \usepackage[space,space,hyperref]{ctex}
+  \usetheme{warsaw}
+  \author{ddswhu}
+  \title{First Start}
+  \begin{document}
+  \frame{\titlepage}
+  \begin{frame}[c]\frametitle{frame title}
+      The context goes here
+  \end{frame}
+  \end{document}
+  \end{verbatim}
+\end{alertblock}
+\end{frame}
+
+\section{文档结构}
+\begin{frame}[c,fragile]\frametitle{帧（frame）}
+我们看到的每一页 PDF 即是所谓幻灯片的帧，Beamer 的帧分为三类，帧对于 beamer 就像书页对于书。
+\begin{enumerate}
+  \item 标题页帧  \verb|\frame{\titlepage}|
+  \item 普通帧
+  \begin{verbatim}
+  \begin{frame}[对齐方式]\frametitle{帧标题}
+  内容
+  \end{frame}
+  \end{verbatim}
+  \vspace*{-4ex}
+  \item 空白帧
+  \begin{verbatim}
+  \begin{frame}[plain]
+  空白帧没有标题
+  \end{frame}
+  \end{verbatim}
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[c,fragile]\frametitle{标题页帧}
+标题页帧是我们的第一帧，在这上面，我们会有标题、作者、时间、机构，LOGO 等信息，可以显示在标题的主要信息如下：
+\begin{exampleblock}{标题页信息}
+\begin{verbatim}
+  \title[short title]{long title}
+  \subtitle[short subtitle]{long subtitle}
+  \author[short name]{long name}
+  \date[short date]{long date}
+  \institution[short name]{long name}
+  \titlegraphic{\includegraphics[width=0.17\textwidth]{ias.pdf}}
+\end{verbatim}
+
+\end{exampleblock}
+\end{frame}
+
+
+\begin{frame}[c,fragile]\frametitle{目录与节、小节}
+\noindent\textbf{目录}
+\begin{verbatim}
+  \begin{frame}\frametitle{Outline}
+  \tableofcontents[part=1,pausesections]
+  \end{frame}
+\end{verbatim}
+\textbf{节与小节}
+\begin{verbatim}
+  \section{section name}
+  \subsection{subsection name}
+  \subsubsection{sub-subsection name}
+  \section*{section name}
+\end{verbatim}
+最后一个命令生成一个节（section），但是，这个节不进入目录中。
+\end{frame}
+
+
+\section{列表环境}
+\begin{frame}[c,fragile]\frametitle{列表环境--itemize}
+三类列表环境，包括无序列表（itemize）、有序列表（enumerate）、描述列表（description）。其中前两者非常常用，使用非常简单。\\
+\noindent\textbf{无序列表 itemize 示例}
+\begin{columns}[c]
+\begin{column}{0.55\textwidth}
+  \begin{verbatim}
+  \begin{itemize}
+    \item The first item
+    \item The second item
+    \item The third item
+    \item The fourth item
+  \end{itemize}
+  \end{verbatim}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}
+  \item The first item
+  \item The second item
+  \item The third item
+  \item The fourth item
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{列表环境--enumerate}
+\noindent\textbf{有序列表 enumerate 示例}
+\begin{columns}[c]
+\begin{column}{0.55\textwidth}
+  \begin{verbatim}
+  \begin{enumerate}
+    \item The first item
+    \item The second item
+    \item The third item
+    \item The fourth item
+  \end{enumerate}
+  \end{verbatim}
+\end{column}
+\begin{column}{0.42\textwidth}
+\begin{enumerate}
+  \item The first item
+  \item The second item
+  \item The third item
+  \item The fourth item
+\end{enumerate}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{列表环境--description}
+\noindent\textbf{描述列表 description 示例}
+  \begin{verbatim}
+  \begin{description}
+    \item[First Item] Description of first item
+    \item[Second Item] Description of second item
+    \item[Third Item] Description of third item
+    \item[Forth Item] Description of forth item
+  \end{description}
+  \end{verbatim}
+  \vspace*{-5ex}
+  \begin{description}
+    \item[First Item] Description of first item
+    \item[Second Item] Description of second item
+    \item[Third Item] Description of third item
+    \item[Forth Item] Description of forth item
+  \end{description}
+\end{frame}
+
+\section{段落文本}
+\begin{frame}[fragile]{文本命令}
+\begin{columns}
+  \begin{column}{0.6\paperwidth}
+  \begin{verbatim}
+      \emph{Sample Text}
+      \textbf{Sample Text}
+      \textit{Sample Text}
+      \textsl{Sample Text}
+      \alert{Sample Text}
+      \textrm{Sample Text}
+      \textsf{Sample Text}
+      \textcolor{green}{Sample Text}
+      \structure{Sample Text}
+  \end{verbatim}
+  \end{column}
+  \begin{column}{0.39\paperwidth}
+    \emph{Sample Text}\\
+    \textbf{Sample Text}\\
+    \textit{Sample Text}\\
+    \textsl{Sample Text}\\
+    \alert{Sample Text}\\
+    \textrm{Sample Text}\\
+    \textsf{Sample Text}\\
+    \textcolor{green}{Sample Text}\\
+    \structure{Sample Text}\\
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{字体与字号}
+\noindent\textbf{字体主题：}\verb|\usefonttheme[onlymath]{serif}|\\
+\noindent\textbf{字体大小：}\verb|\documentclass[11pt]{beamer}|，可选项为 10-11-12pt\\
+\noindent\textbf{字体族\phantom{大}：}\verb|\usepackage{helvet}|，可选项如下：
+\begin{exampleblock}{字体宏包}
+\begin{verbatim}
+  serif   avant    bookman   chancery  charter
+  euler   helvet   mathtime  mathptm   mathptmx
+  newcent palatino pifont    utopia
+\end{verbatim}
+\end{exampleblock}
+\end{frame}
+
+
+\section{帧内结构}
+
+\begin{frame}[c,fragile]\frametitle{分栏}
+\noindent\textbf{多栏显示：}在我们做讲稿的时候，有时候为了使得幻灯片更加工整，充实，会在一旁插入图片、表格或者说明性的文字，这个时候可以使用 beamer 中的多栏环境（columns）或者 \LaTeX{} 中的子页环境（minipage）。
+\begin{verbatim}
+  \begin{columns}
+  \column{.xx\textwidth}
+    First column text and/or code
+  \column{.xx\textwidth}
+    Second column text and/or code
+  \end{columns}
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[c]\frametitle{区块}
+Beamer 中一个非常有特色的是它带了一些区块（block），这些区块环境与普通文本能很好地区分开来，适用于各种定理，引理以及示例。默认的 Beamer 有如下环境：
+\begin{columns}
+\column{0.4\textwidth}
+\begin{exampleblock}{Beamer 自带区块环境}
+\begin{description}
+\item[block] 普通环境
+\item[theorem] 定理环境
+\item[lemma] 引理环境
+\item[proof] 证明环境
+\item[corollary] 推论环境
+\item[example] 示例环境
+\item[alertblock] 警示环境
+\end{description}
+\end{exampleblock}
+\column{0.6\textwidth}
+\begin{alertblock}{勾股定理}
+我们熟知的勾股定理
+\begin{equation}
+a^{2}+b^{2}=c^{2}
+\end{equation}
+\end{alertblock}
+\end{columns}
+
+\end{frame}
+
+\section{图与表格}
+
+\begin{frame}[c,fragile]\frametitle{插入表格}
+\noindent插图与插表格的命令和 \LaTeX{} 没有区别，插表的命令如下
+\begin{verbatim}
+  \begin{table}[tb]
+  \centering
+  \caption{Caption here\label{tab:tablename}}
+    \begin{tabular}{l|cc}  \hline
+    \textbf{column 1} & \textbf{column 2} & \textbf{column 3} \\ \hline
+    Hello  & Beamer & NAN \\ \hline
+    $\alpha+\beta$ & $\gamma+\eta$ & 34\% \\ \hline
+    \end{tabular}
+  \end{table}
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[c,fragile]\frametitle{插入图片}
+\noindent 插图与插表格的命令和 \LaTeX{} 没有区别，插图的命令如下
+\begin{verbatim}
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figure.png}
+  \caption{Caption here\label{fig:figure1}}
+\end{figure}
+\end{verbatim}
+\end{frame}
+
+
+
+\begin{frame}[c,fragile]\frametitle{图表效果}
+\begin{columns}[c]
+\column{0.5\textwidth}
+  \begin{table}[tb]
+  \centering
+  \caption{Caption here\label{tab:tablename}}
+    \begin{tabular}{l|cc}  \hline
+    \textbf{column 1} & \textbf{column 2} & \textbf{column 3} \\ \hline
+               Hello  & Beamer            & NAN               \\ \hline
+    $\alpha+\beta$    & $\gamma+\eta$     & 34\%              \\ \hline
+    \end{tabular}
+  \end{table}
+\column{0.5\textwidth}
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=0.75\textwidth]{figure.png}
+  \caption{Caption here\label{fig:figure1}}
+\end{figure}
+\end{columns}
+
+\end{frame}
+\section{主题}
+\begin{frame}[c,fragile]\frametitle{主题}
+Beamer 因为有各种主题才使得有生气，不过，大部分人还在用默认的主题，其中，Warsaw 用的非常多，建议避免。默认的主题如下：
+\begin{exampleblock}{Beamer 自带主题}
+\begin{verbatim}
+Antibes     Bergen      Berkeley     Berlin
+Boadilla    Copenhagen  Darmstadt    Dresden
+Frankfurt   Goettingen  Hannover     Ilmenau
+Juanlespins Madrid      Malmoe       Marburg
+Montpellier Paloalto    Pittsburgh   Rochester
+Singapore
+\end{verbatim}
+\end{exampleblock}
+可以查看 {\color{erlangenblue}\url{http://www.ctan.org/tex-archive/macros/latex/contrib/beamer/doc/}} 上各种主题的 PDF 效果。
+\end{frame}
+
+\begin{frame}[c,fragile]\frametitle{颜色主题}
+颜色主题有三种，分别是 colortheme，inner color theme，outter color theme。 colortheme 控制着全部的颜色，inner color theme 控制着帧内一些元素的颜色，主要是 block，outter color theme 控制着 headline，footline，sidebar 等元素的颜色。使用的方法都是一致的。
+\begin{verbatim}
+\usecolortheme{default}
+\end{verbatim}
+\begin{exampleblock}{Beamer 中的颜色主题}
+\begin{description}
+  \item[color theme] albatross crane beetle dove fly seagull wolverine beaver
+  \item[inner color] lily orchid rose
+  \item[outter color] whale seahorse dolphin
+\end{description}
+\end{exampleblock}
+
+\end{frame}
+
+\begin{frame}[c]\frametitle{了解更多}
+\noindent\textbf{想了解更多？}\\
+\begin{itemize}
+    \item The Beamer Class User Guide for v3.10(官方文档)
+    \item Beamer v3.0 Guide(Ki-JooKim)
+    \item Beamer v3.0 指南 (黄旭华译)
+    \item A Beamer Tutorial in Beamer(本文内容来源)
+\end{itemize}
+
+\noindent 本幻灯片主题来源于 \LaTeX{}Studio，传送门：{\color{erlangenblue}\url{http://www.latexstudio.net/fau-erlangen-beamer-template/}}
+
+\end{frame}
+
+
+\begin{frame}[c]\frametitle{广告时间}
+Elegant\LaTeX{} 项目组致力于设计美观的 \LaTeX{} 系列模板，我们的主页是 {\color{erlangenblue}\url{http://elegantlatex.org/}}！欢迎关注我们的微博：@ElegantLaTeX，Elegant\LaTeX{} 目前成员有：
+\begin{itemize}
+\item Ethan D ({\color{erlangenblue}\url{http://ddswhu.com/}})
+\item 勤劳的小L ({\color{erlangenblue}\url{http://liam0205.me/}})
+\item 逐鹿人 ({\color{erlangenblue}\url{http://wangmurong.org.cn/}})
+\item fitsir ({\color{erlangenblue}\url{http://fitsir.me/}})
+\item WD (\texttt{Error 404 -- Not Found})
+\end{itemize}
+
+如果你有一颗乐于奉献的心、对 \LaTeX{} 比较感兴趣，或者对设计有兴趣、独特见解，欢迎加入我们！
+
+\end{frame}
+
+\end{document}

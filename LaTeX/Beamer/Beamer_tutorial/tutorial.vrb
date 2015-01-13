@@ -1,0 +1,13 @@
+\frametitle{颜色主题}
+颜色主题有三种，分别是 colortheme，inner color theme，outter color theme。 colortheme 控制着全部的颜色，inner color theme 控制着帧内一些元素的颜色，主要是 block，outter color theme 控制着 headline，footline，sidebar 等元素的颜色。使用的方法都是一致的。
+\begin{verbatim}
+\usecolortheme{default}
+\end{verbatim}
+\begin{exampleblock}{Beamer 中的颜色主题}
+\begin{description}
+  \item[color theme] albatross crane beetle dove fly seagull wolverine beaver
+  \item[inner color] lily orchid rose
+  \item[outter color] whale seahorse dolphin
+\end{description}
+\end{exampleblock}
+
