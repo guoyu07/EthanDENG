@@ -1,0 +1,25 @@
+\documentclass{standalone}
+
+\usepackage{xcolor}
+\definecolor{mygray}{gray}{.65}
+\definecolor{mygray2}{gray}{0.95}
+\usepackage{pstricks,pst-plot}
+
+\begin{document}
+\newgray{mygray}{.65}
+\begin{pspicture}(-1,-1)(3,3)
+ \psgrid[gridcolor=blue!30,gridlabelcolor=black!40,subgriddiv=1]
+  \psarc(0,0){3}{30}{60}
+  \SpecialCoor
+  \psline[linecolor=mygray]{->}(0,0)(3,0)
+  \psline[linecolor=mygray]{->}(0;0)(3;30)
+  \psline[linecolor=mygray]{->}(0;0)(3;60)
+  \psarc[linecolor=mygray]{->}(0,0){0.5}{0}{30}
+  \psarc[linecolor=mygray]{->}(0,0){1.25}{0}{60}
+  \uput[r](0.5;15){\color{mygray}$\scriptstyle 30^\circ$}
+  \uput[r](1.25;30){\color{mygray}$\scriptstyle 60^\circ$}
+\end{pspicture}
+
+\end{document}
+
+

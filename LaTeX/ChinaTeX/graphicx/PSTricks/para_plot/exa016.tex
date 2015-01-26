@@ -1,0 +1,15 @@
+\documentclass{standalone}
+\usepackage{pstricks-add}
+\begin{document}
+\psset{unit=5}
+\begin{pspicture}(-1.1,-1.1)(1.2,1.2)
+\psaxes[Dx=0.5,Dy=0.5]{->}(0,0)(-1.1,-1.1)(1.1,1.1)
+\psparametricplot
+  [plotpoints=100,algebraic,linecolor=red,
+   linewidth=2pt]{0}{Pi}{cos(3*t) * cos(t) | cos(3*t) * sin(t) }
+\multido{\rA=0.34+0.50}{6}{%
+  \psparametricplot
+    [plotpoints=2,algebraic,linecolor=blue,arrows=->,arrowscale=2,
+     linewidth=2pt]{\rA}{\rA\space 0.01 add}{cos(3*t) * cos(t) | cos(3*t) * sin(t) }}
+\end{pspicture}
+\end{document}
