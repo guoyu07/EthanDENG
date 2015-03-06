@@ -1,7 +1,7 @@
 %!TEX program = xelatex
 \documentclass[10pt]{beamer}
 \usepackage{amsmath}
-
+% \renewcommand{\figurename}{FIGRUE}
 \numberwithin{figure}{section}
 \usetheme[menuwidth={0.5\paperwidth}]{erlangen}
 \setbeamercovered{transparent=20}
@@ -148,9 +148,9 @@ moretexcs={subfloat,usepackage,DeclareGraphicsRule,DeclareGraphicsExtensions,gra
 我们通常使用 \lstinline{LaTeX}、\lstinline{PDFLaTeX}、\lstinline{XeLaTeX} 编译源文件。各种编译方式下图形格式支持如下：
 
 \begin{enumerate}
-  \item \lstinline{LaTeX} 只支持 EPS、PS 图形文件；
-  \item \lstinline{PDFLaTeX} 支持 PNG、PDF、JPEG 格式图形文件，不支持 EPS；
-  \item \lstinline{XeLaTeX} 直接支持 BMP、JPEG、PNG、EPS 和 PDF。
+  \item \lstinline{LaTeX} 直接支持 EPS、PS 图形文件，间接支持 JPEG、PNG 等格式；
+  \item \lstinline{PDFLaTeX} 直接支持 PNG、PDF、JPEG 格式图形文件，间接支持 EPS；
+  \item \lstinline{XeLaTeX} 直接支持 BMP、JPEG、PNG、EPS 和 PDF 图形格式。
 \end{enumerate}
 
 \begin{alertblock}{注意事项：}
@@ -196,7 +196,7 @@ for %%B in (*.jpg) do convert "%%B" -colorspace Gray "out/%%B"
 
 由于历史原因，\lstinline{LaTeX} 编译程序不能提取 JPEG、PNG 等点阵图形的尺寸信息，所以它在处理这些图形文件时需要范围框 。\lstinline{PDFLaTeX} 和 \lstinline{XeLaTeX} 的用户可以跳过本节内容。
 
-EPS 的范围框如下，其中前两个参数是图形左上角的坐标 (通常就是原点)，后两个参数是右下角的坐标，缺省长度单位是 bp。
+EPS 的范围框如下，其中前两个参数是图形左下角的坐标 (通常就是原点)，后两个参数是右上角的坐标，缺省长度单位是 bp。
 \begin{lstlisting}
 %!PS-Adobe-2.0 EPSF-2.0
 %%BoundingBox: 0 0 510 284
