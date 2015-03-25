@@ -4,7 +4,7 @@ library(dplyr)
 # initial parameters to generate the data
 b0 <- 1; b1 <- 1; b2 <- 1
 # sample size step1 - > 100, step2 -> 1000/10000
-size <- 1000
+size <- 100
 # set the seed to generate x1 x2 z11 z12 z13 u
 # seed <- sample(seq(1:1000),6,replace = FALSE)
 seed <- c(123,323,432,378,245,765)

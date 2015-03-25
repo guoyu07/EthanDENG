@@ -35,20 +35,20 @@ XY <- data.frame(x1h = rep(NA,size),
                   x1 = data$x1,
                   x2 = data$x2,
                    y = data$y)
-
+Khm <- matrix(rep(NA,size*size),ncol=size)
 # Given h, estimate betahat with diffrent methods
 estimatebeta <- function(h, method = "dwe") {
     for (i in 1:size){
         HYi <- 0; FZi <- 0; HXi <- 0
         for (j in 1:size) {
-            Khij <- Kh(Z[i,],Z[j,],h)
-            HYi  <-     Y[j]*Khij + HYi
-            HXi  <-    X[j,]*Khij + HXi
-            FZi  <-          Khij + FZi
+            Khm[i,j] <- Kh(Z[i,],Z[j,],h)
+            HYi  <-     Y[j]*Khm[i,j] + HYi
+            HXi  <-    X[j,]*Khm[i,j] + HXi
+            FZi  <-          Khm[i,j] + FZi
         }
         XY[i,3] <- FZi/size
-        XY[i,c(1,2)] <- HXi/(size*FZi)
-        XY[i,4] <- HYi/(size*FZi)
+        XY[i,c(1,2)] <- HXi/FZi
+        XY[i,4] <- HYi/FZi
     }
     if (method == "default") {
         XY  <- mutate(XY,x1d=(x1-x1h),x2d=(x2-x2h),yd=(y-yh))
