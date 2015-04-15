@@ -71,7 +71,6 @@
     commentstyle=\color{darkgreen},
 }
 
-
 \lstset{
     language=Stata,
     style=stata-editor,
@@ -115,11 +114,11 @@
 }
 
 \usepackage[no-math,cm-default]{fontspec}
-\defaultfontfeatures{Mapping=tex-text}
+% \defaultfontfeatures{Mapping=tex-text}
 \RequirePackage{xunicode}
 \RequirePackage{xltxtra}
-\setmainfont[Ligatures=TeX]{Adobe Garamond Pro} %  (\textrm)
-\setsansfont{Myriad Pro} %  (\textsf)
+\setmainfont[Mapping=tex-text,Ligatures=TeX]{Adobe Garamond Pro} %  (\textrm)
+\setsansfont[Mapping=tex-text]{Myriad Pro} %  (\textsf)
 \setmonofont{Monaco}%Palatino Linotype
 %-中文字体设置-%
 \usepackage{xeCJK}
