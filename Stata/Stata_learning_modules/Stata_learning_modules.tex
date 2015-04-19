@@ -1,0 +1,144 @@
+%!TEX program = xelatex
+\documentclass{article}
+\usepackage{booktabs,longtable}
+\usepackage{listings}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{paralist}
+% langugae defination
+\lstdefinelanguage{Stata}{
+    % Left for users to add missing commands,
+    % with possibility of choosing different style.
+    morekeywords={},
+    % Popular add-on commands
+    morekeywords=[2]{cntrade, chinafin, wbopendata, spmap},
+    % System commands
+    morekeywords=[3]{regress, summarize,sum,
+                     display,log,tabstat,histogram,stem,graph,kdensity,box,rnormal, runiform,mean,sd,p5,p10,p15,p20,p25,p30,p35,p40,p45,p50,p55,p60,p65,p70,p75,p80,p85,p90,p95,p100,n,insheet,infile,infix,input,import,describe,compress,save,use,sysuse,count,list,memory,str10,str8,excel,end,view,matrix,pwcorr,correlate,tab,display,lookfor,labelbook,codebook,sort,tabulate,table,label,order,encode,rename,notes,generate,gen,egen,recode,std,tab1,scatter,rowmean,colmean,keep,drop,append,merge,ttest,anova,margins,marginsplot,predict,pnorm,qnorm,rvfplot,test,logit,tobit,signtest,signrank,ranksum,kwallis,logistic,testparm,inspect,dta_contents,!missing,inrange,missing,oneway,anova,rowmiss,rownonmiss,tabulation,corr,reg,rowtotal},
+    % Programming Key
+    morekeywords=[4]{forvalues, if, foreach, set, using, in, cd, dir, ls,variable,define,values,data,pwd,close,help,c},
+    % Options Key
+    morekeywords=[5]{by,over,stat,
+                     text,replace,force,detail,normal,lines,width,jitter,start,clear,sheet,firstrow,half,row,column,col,normal,obs,noobs,nolabel,or,coef,all,expected,unequal,asbalanced,robust,clear,plot,nofreq,chi2,exact,m,missing,listwise,pairwise},
+    morecomment=[l]{//},
+    % morecomment=[l]{*},  % `*` maybe used as multiply operator. So use `//` as line comment.
+    morecomment=[s]{/*}{*/},
+    % morecomment=[s]{,}{//},
+    % The following is used by macros, like `lags'.
+    morecomment=[n][keywordstyle9]{`}{'},
+    morestring=[b]",
+    sensitive=true,
+    numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=5pt,
+}
+
+\lstdefinestyle{numbers}{
+    numbers=left,
+    stepnumber=1,
+    numberstyle=\tiny,
+    xleftmargin=2em,
+}
+\lstdefinestyle{nonumbers}{
+    numbers=none,
+}
+\lstdefinestyle{stata-plain}{
+    % comment slanted and keywords bolded.
+    language=Stata,
+    basicstyle=\setmonofont{Consolas}\footnotesize\ttfamily,
+}
+
+\definecolor{darkgreen}{rgb}{0.0, 0.44, 0.0}
+\definecolor{darkblue}{rgb}{0.0, 0.0, 0.55}
+\definecolor{mahogany}{rgb}{0.75, 0.25, 0.0}
+\definecolor{richcarmine}{rgb}{0.84, 0.0, 0.25}
+
+\lstdefinestyle{stata-editor}{
+    language=Stata,
+    % size of the fonts for the code
+    basicstyle=\setmonofont{Consolas}\footnotesize\ttfamily,
+    % Color settings to match do-file editor style
+    % Commands that are not included in the defination
+    keywordstyle={\color{darkblue}},
+    % Popular add-on commands
+    keywordstyle=[2]{\color{darkblue}},
+    % System commands
+    keywordstyle=[3]{\color{darkblue}},
+    % Keywords
+    keywordstyle=[4]{\color{magenta}},
+    % Built-in functions like rnormal
+    keywordstyle=[5]{\color{mahogany}},
+    % Used by macros, i.e. `lags'
+    keywordstyle=[9]{\color{TealBlue}},
+    stringstyle=\color{richcarmine},
+    commentstyle=\color{darkgreen},
+}
+
+\lstset{
+    language=Stata,
+    style=stata-editor,
+    % style=stata-editor,
+    style=numbers,
+    showstringspaces=false,
+    breaklines,
+    frame=single,
+    % To add missing commands
+    % morekeywords={xtreg, xtunitroot},
+}
+
+
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{
+            a4paper,
+            left=27mm,  %% or inner=23mm
+            right=27mm, %% or outer=18mm
+            top=25.4mm, bottom=25.4mm,
+            headheight=2.17cm,
+            headsep=4mm,
+            footskip=12mm
+}
+
+\hypersetup{
+            breaklinks,
+                   unicode,
+            bookmarksnumbered=true,
+            bookmarksopen=true,
+            colorlinks,
+            urlcolor=darkblue,
+            citecolor=magenta,
+            linkcolor=darkgreen,
+            plainpages=false,
+            pdfstartview=FitH,
+            pdfborder={0 0 0},
+            linktocpage
+}
+
+\usepackage[no-math,cm-default]{fontspec}
+% \defaultfontfeatures{Mapping=tex-text}
+\RequirePackage{xunicode}
+\RequirePackage{xltxtra}
+\setmainfont[Mapping=tex-text,Ligatures=TeX]{Adobe Garamond Pro} %  (\textrm)
+\setsansfont[Mapping=tex-text]{Myriad Pro} %  (\textsf)
+\setmonofont{Monaco}%Palatino Linotype
+%-中文字体设置-%
+\usepackage{xeCJK}
+\setCJKmainfont[BoldFont={方正黑体简体},ItalicFont={方正楷体简体}]{方正书宋简体}
+%方正书宋_GBK Adobe Song Std L华文中宋
+\setCJKsansfont[BoldFont={方正黑体简体},ItalicFont={方正楷体简体}]{方正中等线简体}
+\setCJKmonofont{微软雅黑Monaco}
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 1pt
+\newfontfamily\gara{Adobe Garamond Pro}
+\linespread{1.3}
+\title{\bfseries{\color{blue}Stata} {\color{magenta}Learning Modules}}
+\author{\Large\gara\itshape{{\color{blue}E}than {\color{magenta}D}eng} \\ Version 1.0}
+
+
+\begin{document}
+\maketitle
+\input{mod1}
+\input{mod2}
+
+
+\end{document}
+

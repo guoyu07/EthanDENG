@@ -1,0 +1,457 @@
+\section{Fundamentals of Using Stata (part I)}
+
+\subsection{A Sample Stata Session}
+Please refer to \href{http://www.stata.com/manuals13/gsw1.pdf}{Manuals13}.
+
+\subsection{Descriptive information and statistics}
+This module shows common commands for showing descriptive information and descriptive statistics about data files.
+
+\subsubsection{Getting an overview of your file}
+
+The \lstinline{sysuse} command loads a specified Stata-format dataset that was shipped with Stata. Here we will use the \lstinline{auto} data file.
+
+\begin{lstlisting}
+sysuse auto
+\end{lstlisting}
+
+The \lstinline{describe} command shows you basic information about a Stata data file. As you can see, it tells us the number of observations in the file, the number of variables, the names of the variables, and more.
+
+\begin{lstlisting}
+describe
+ Contains data from auto.dta
+  obs:            74
+ vars:            12                          17 Feb 1999 10:49
+ size:         3,108 (99.6% of memory free)
+-------------------------------------------------------------------------------
+   1. make      str17  %17s
+   2. price     int    %9.0g
+   3. mpg       byte   %9.0g
+   4. rep78     byte   %9.0g
+   5. hdroom    float  %9.0g
+   6. trunk     byte   %9.0g
+   7. weight    int    %9.0g
+   8. length    int    %9.0g
+   9. turn      byte   %9.0g
+  10. displ     int    %9.0g
+  11. gratio    float  %9.0g
+  12. foreign   byte   %9.0g
+-------------------------------------------------------------------------------
+Sorted by:
+\end{lstlisting}
+
+The \lstinline{codebook} command is a great tool for getting a quick overview of the variables in the data file. It produces a kind of electronic codebook from the data file. Have a look at what it produces below.
+
+\begin{lstlisting}
+codebook
+make -------------------------------------------------------------- (unlabeled)
+                  type:  string (str17)
+
+         unique values:  74                   coded missing:  0 / 74
+
+              examples:  "Cad. Deville"
+                         "Dodge Magnum"
+                         "Merc. XR-7"
+                         "Pont. Catalina"
+
+               warning:  variable has embedded blanks
+
+price ------------------------------------------------------------- (unlabeled)
+                  type:  numeric (int)
+
+                 range:  [3291,15906]                 units:  1
+         unique values:  74                   coded missing:  0 / 74
+
+                  mean:   6165.26
+              std. dev:    2949.5
+
+           percentiles:        10%       25%       50%       75%       90%
+                              3895      4195    5006.5      6342     11385
+//(omitted)
+\end{lstlisting}
+
+Another useful command for getting a quick overview of a data file is the \lstinline{inspect} command. Here is what the \lstinline{inspect} command produces for the auto data file.
+\begin{lstlisting}
+inspect
+price:                                         Number of Observations
+--------                                                           Non-
+                                               Total   Integers    Integers
+|  #                            Negative           -         -          -
+|  #                            Zero               -         -          -
+|  #                            Positive          74        74          -
+|  #                                           -----     -----      -----
+|  #                            Total             74        74          -
+|  #   #   .   .   .            Missing            -
++----------------------                        -----
+3291              15906                           74
+  (74 unique values)
+
+mpg:                                           Number of Observations
+------                                                             Non-
+                                               Total   Integers    Integers
+|      #                        Negative           -         -          -
+|      #                        Zero               -         -          -
+|      #                        Positive          74        74          -
+|  #   #                                       -----     -----      -----
+|  #   #   #                    Total             74        74          -
+|  #   #   #   #   .            Missing            -
++----------------------                        -----
+12                   41                           74
+  (21 unique values)
+//(omitted)
+\end{lstlisting}
+
+The \lstinline{list} command is useful for viewing all or a range of observations. Here we look at \textit{make}, \textit{price}, \textit{mpg}, \textit{rep78} and \textit{foreign} for the first 10 observations.
+
+\begin{lstlisting}
+list make price mpg rep78 foreign in 1/10
+                   make      price        mpg      rep78    foreign
+  1.      Dodge Magnum       5886         16          2          0
+  2.        Datsun 510       5079         24          4          1
+  3.      Ford Mustang       4187         21          3          0
+  4.  Linc. Versailles      13466         14          3          0
+  5.     Plym. Sapporo       6486         26          .          0
+  6.       Plym. Arrow       4647         28          3          0
+  7.     Cad. Eldorado      14500         14          2          0
+  8.        AMC Spirit       3799         22          .          0
+  9.    Pont. Catalina       5798         18          4          0
+ 10.        Chev. Nova       3955         19          3          0
+\end{lstlisting}
+
+\subsubsection{Creating tables}
+
+The \lstinline{tabulate} command is useful for obtaining frequency tables. Below, we make a table for \textit{rep78} and a table for \textit{foreign}. The command can also be shortened to \lstinline{tab}.
+
+\begin{lstlisting}
+tabulate rep78
+      rep78 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          2        2.90        2.90
+          2 |          8       11.59       14.49
+          3 |         30       43.48       57.97
+          4 |         18       26.09       84.06
+          5 |         11       15.94      100.00
+------------+-----------------------------------
+      Total |         69      100.00
+tabulate foreign
+     foreign |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |         52       70.27       70.27
+          1 |         22       29.73      100.00
+------------+-----------------------------------
+      Total |         74      100.00
+\end{lstlisting}
+
+The \lstinline{tab1} command can be used as a shortcut to request tables for a series of variables (instead of typing the \lstinline{tabulate} command over and over again for each variable of interest).
+
+\begin{lstlisting}
+tab1 rep78 foreign
+-> tabulation of rep78
+
+      rep78 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          2        2.90        2.90
+          2 |          8       11.59       14.49
+          3 |         30       43.48       57.97
+          4 |         18       26.09       84.06
+          5 |         11       15.94      100.00
+------------+-----------------------------------
+      Total |         69      100.00
+
+-> tabulation of foreign
+
+    foreign |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |         52       70.27       70.27
+          1 |         22       29.73      100.00
+------------+-----------------------------------
+      Total |         74      100.00
+\end{lstlisting}
+
+
+We can use the \lstinline{plot} option to make a plot to visually show the tabulated values.
+
+\begin{lstlisting}
+tabulate rep78, plot
+      rep78 |      Freq.
+------------+------------+-----------------------------------------------------
+          1 |          2 |**
+          2 |          8 |********
+          3 |         30 |******************************
+          4 |         18 |******************
+          5 |         11 |***********
+------------+------------+-----------------------------------------------------
+      Total |         69
+\end{lstlisting}
+
+We can also make crosstabs using \lstinline{tabulate}. Let\rq{}s look at the repair history broken down by \textit{foreign} and \textit{domestic} cars.
+
+\begin{lstlisting}
+tabulate rep78 foreign
+           |        foreign
+     rep78 |         0          1 |     Total
+-----------+----------------------+----------
+         1 |         2          0 |         2
+         2 |         8          0 |         8
+         3 |        27          3 |        30
+         4 |         9          9 |        18
+         5 |         2          9 |        11
+-----------+----------------------+----------
+     Total |        48         21 |        69
+\end{lstlisting}
+
+With the \lstinline{column} option, we can request column percentages. Notice that about 86\% of the foreign cars received a rating of 4 or 5. Only about 23\% of domestic cars were rated that highly.
+
+\begin{lstlisting}
+tabulate rep78 foreign, column
+           |        foreign
+     rep78 |         0          1 |     Total
+-----------+----------------------+----------
+         1 |         2          0 |         2
+           |      4.17       0.00 |      2.90
+-----------+----------------------+----------
+         2 |         8          0 |         8
+           |     16.67       0.00 |     11.59
+-----------+----------------------+----------
+         3 |        27          3 |        30
+           |     56.25      14.29 |     43.48
+-----------+----------------------+----------
+         4 |         9          9 |        18
+           |     18.75      42.86 |     26.09
+-----------+----------------------+----------
+         5 |         2          9 |        11
+           |      4.17      42.86 |     15.94
+-----------+----------------------+----------
+     Total |        48         21 |        69
+           |    100.00     100.00 |    100.00
+\end{lstlisting}
+
+We can use the \lstinline{nofreq} option to suppress the frequencies, and just focus on the percentages.
+
+\begin{lstlisting}
+tabulate rep78 foreign, column nofreq
+           |        foreign
+     rep78 |         0          1 |     Total
+-----------+----------------------+----------
+         1 |      4.17       0.00 |      2.90
+         2 |     16.67       0.00 |     11.59
+         3 |     56.25      14.29 |     43.48
+         4 |     18.75      42.86 |     26.09
+         5 |      4.17      42.86 |     15.94
+-----------+----------------------+----------
+     Total |    100.00     100.00 |    100.00
+\end{lstlisting}
+
+
+Note that the order of the options does not matter. Just remember that the options must come after the comma.
+
+\begin{lstlisting}
+tabulate rep78 foreign, nofreq column
+           |        foreign
+     rep78 |         0          1 |     Total
+-----------+----------------------+----------
+         1 |      4.17       0.00 |      2.90
+         2 |     16.67       0.00 |     11.59
+         3 |     56.25      14.29 |     43.48
+         4 |     18.75      42.86 |     26.09
+         5 |      4.17      42.86 |     15.94
+-----------+----------------------+----------
+     Total |    100.00     100.00 |    100.00
+\end{lstlisting}
+
+\subsubsection{Generating summary statistics with summarize}
+
+For summary statistics, we can use the \lstinline{summarize} command. Let's generate some summary statistics on \textit{mpg}.
+
+\begin{lstlisting}
+summarize mpg
+Variable |     Obs        Mean   Std. Dev.       Min        Max
+---------+-----------------------------------------------------
+     mpg |      74     21.2973   5.785503         12         41
+\end{lstlisting}
+
+We can use the \lstinline{detail} option of the \lstinline{summarize} command to get more detailed summary statistics.
+
+\begin{lstlisting}
+summarize mpg, detail
+                              mpg
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%           12             12
+ 5%           14             12
+10%           14             14       Obs                  74
+25%           18             14       Sum of Wgt.          74
+
+50%           20                      Mean            21.2973
+                        Largest       Std. Dev.      5.785503
+75%           25             34
+90%           29             35       Variance       33.47205
+95%           34             35       Skewness       .9487176
+99%           41             41       Kurtosis       3.975005
+\end{lstlisting}
+
+To get these values separately for \textit{foreign} and \textit{domestic}, we could use the \lstinline{by foreign:} prefix as shown below. Note that we first had to \lstinline{sort} the data before using \lstinline{by foreign:}.
+
+\begin{lstlisting}
+sort foreign
+by foreign: summarize mpg
+ -> foreign= 0
+Variable |     Obs        Mean   Std. Dev.       Min        Max
+---------+-----------------------------------------------------
+     mpg |      52    19.82692   4.743297         12         34
+
+-> foreign= 1
+Variable |     Obs        Mean   Std. Dev.       Min        Max
+---------+-----------------------------------------------------
+     mpg |      22    24.77273   6.611187         14         41
+\end{lstlisting}
+
+
+This is not the most efficient way to do this. Another way, which does not require the data to be sorted, is by using the \lstinline{summarize( )} option as part of the \lstinline{tabulate} command.
+
+\begin{lstlisting}
+tabulate foreign, summarize(mpg)
+            |           Summary of mpg
+    foreign |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+          0 |   19.826923   4.7432972          52
+          1 |   24.772727   6.6111869          22
+------------+------------------------------------
+      Total |   21.297297   5.7855032          74
+\end{lstlisting}
+
+Here is another example, showing the average price of cars for each level of repair history.
+
+\begin{lstlisting}
+tabulate rep78, summarize(price)
+            |          Summary of price
+      rep78 |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+          1 |      4564.5   522.55191           2
+          2 |    5967.625   3579.3568           8
+          3 |   6429.2333   3525.1398          30
+          4 |      6071.5   1709.6083          18
+          5 |        5913   2615.7628          11
+------------+------------------------------------
+      Total |   6146.0435   2912.4403          69
+\end{lstlisting}
+
+\subsubsection{Summary}
+
+
+\begin{compactitem}
+\item \lstinline{describe:} provide information about the current data file, including the number of variables and observations and a listing of the variables in a data file.
+
+\item \lstinline{codebook:} produce codebook like information for the current data file.
+\item \lstinline{inspect:} provide a quick overview of data file.
+\item \lstinline{list make mpg:} list out the variables make and mpg.
+\item \lstinline{tabulate mpg:} make a table of mpg.
+\item \lstinline{tabulate rep78 foreign:} make a two way table of rep78 by foreign.
+\item \lstinline{summarize mpg price:} produce summary statistics of mpg and price.
+\item To produce summary statistics for mpg separately for foreign and domestic cars,use
+\begin{lstlisting}
+sort foreign
+by foreign: summarize(mpg)
+\end{lstlisting}
+\item \lstinline{tabulate foreign, summarize(mpg):} produce summary statistics for mpg by foreign (prior sorting not required).
+\end{compactitem}
+
+\subsection{Getting help using Stata}
+This module shows resources you can use to help you learn and use Stata.
+
+\subsubsection{Stata online help}
+When you know the name of the command you want to use (e.g., \lstinline{summarize}), you can use the Stata help to get a quick summary of the command and its syntax. You can do this in two ways:
+\begin{compactenum}
+\item type \lstinline{help summarize} in the command window, or
+\item click \textbf{Help}, \textbf{Stata Command}, then type \lstinline{summarize}.
+\end{compactenum}
+
+Here is what help summarize looks like.
+\begin{lstlisting}
+help summarize
+help summarize                                     dialog:  summarize
+---------------------------------------------------------------------
+
+Title
+
+    [R] summarize -- Summary statistics
+
+
+Syntax
+
+        summarize [varlist] [if] [in] [weight] [, options]
+
+    options           description
+    ---------------------------------------------------------------
+    Main
+      detail          display additional statistics
+      meanonly        suppress the display; only calculate the
+                        mean; programmer's option
+      format          use variable's display format
+      separator(#)    draw separator line after every # variables;
+                        default is separator(5)
+    ---------------------------------------------------------------
+    varlist may contain time-series operators; see tsvarlist.
+    by may be used with summarize; see by.
+    aweights, fweights, and iweights are allowed.  However,
+      iweights may not be used with the detail option; see weight.
+//(omitted)
+\end{lstlisting}
+
+If you use the pull-down menu to get help for a command, it shows the same basic information but related commands and topics are hotlinks you can click.
+
+When you want to search for a keyword, e.g. \lstinline{memory}, you can use Stata to search for help topics that contain that keyword. You can do this in two ways:
+\begin{compactenum}
+\item Type search \lstinline{memory} in the command window, or
+\item Click \textbf{Help}, \textbf{Search}, then \textbf{memory}.
+\end{compactenum}
+
+Here is what search memory looks like.
+\begin{lstlisting}
+search memory
+
+GS      . . . . . . . . . . . . . . . . . . . . . . . . Getting Started manual
+
+[U]     Chapter 7  . . . . . . . . . . . . . . . .  Setting the size of memory
+        (help memory)
+
+[R]     compress . . . . . . . . . . . . . . . . . . . Compress data in memory
+        (help compress)
+//(omitted)
+\end{lstlisting}
+
+As you can see, there are lots of help topics that refer to memory. Some of the topics give you a command, and then you can get help for that command. Notice that those topics start with \textbf{GS[U]} or \textbf{[R]}. Those are indicating which Stata manual you could find the command (GS=Getting Started, U=Users Guide, R=Reference Guide).
+
+The next set of topics all start with \textbf{FAQ} because these are Frequently Asked Questions from the Stata web site. You can see the title of the FAQ and the address of the FAQ. Lastly, there is a topic that starts with \textbf{STB} which stands for Stata Technical Bulletin. These refer to add-on programs that you can install into Stata. There are dozens, if not hundreds of specialized and useful programs that you can get from the Stata Technical Bulletin.
+
+You can access this same kind of help from the pull-down menus by clicking \textbf{Help} then \textbf{Search} then type \lstinline{memory}. Note how the related commands, the FAQs, and the STB all have hotlinks you can click. For example, you can click on a FAQ and it will bring up that FAQ in your web browser. Or, you could click on an STB and it would walk you through the steps of installing that STB into your copy of Stata. As you can see, there are real advantages to using the pull-down menus for getting help because it is so easy to click on the related topics.
+
+\subsubsection{Stata sample data files}
+
+Stata has some very useful data files available to you for learning and practicing Stata. For example, you can type
+\begin{lstlisting}
+sysuse auto
+\end{lstlisting}
+to use the auto data file that comes with Stata. You can type
+\begin{lstlisting}
+sysuse dir
+\end{lstlisting}
+to see the entire list of data files that ship with Stata. You can type
+\begin{lstlisting}
+help dta_contents
+\end{lstlisting}
+to see all of the sample data files that you can easily access from within Stata.
+
+\subsubsection{Stata web pages}
+The Stata web page is a wonderful resource. You can visit the main page at \href{http://www.stata.com}{http://www.stata.com}.
+
+The User Support page (click \textbf{User Support} from main page) has a great set of resources, including
+\begin{compactitem}
+\item FAQs
+\item NetCourses
+\item StataList: How to subscribe
+\item StataList: Archives
+\item Statalist ado-file Archives
+\item Stata Bookstore
+\end{compactitem}
+
+In the bookstore, you can find books on Stata. A good intro book on Stata is \textbf{Statistics with Stata}.
