@@ -1,0 +1,1278 @@
+\section{Intermediate Data Management in Stata}
+\subsection{Collapsing data across observations}
+
+Sometimes you have data files that need to be \lstinline{collapsed} to be useful to you. For example, you might have student data but you really want classroom data, or you might have weekly data but you want monthly data, etc. We will illustrate this using an example showing how you can collapse data across kids to make family level data.
+
+Here is a file containing information about the kids in three families. There is one record per kid. \textit{Birth} is the order of birth (i.e., 1 is first), \textit{age} \textit{wt} and \textit{sex} are the child's age, weight and sex. We will use this file for showing how to collapse data across observations.
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/kids", clear
+list
+          famid    kidname      birth        age         wt        sex
+  1.         1       Beth          1          9         60          f
+  2.         1        Bob          2          6         40          m
+  3.         1       Barb          3          3         20          f
+  4.         2       Andy          1          8         80          m
+  5.         2         Al          2          6         50          m
+  6.         2        Ann          3          2         20          f
+  7.         3       Pete          1          6         60          m
+  8.         3        Pam          2          4         40          f
+  9.         3       Phil          3          2         20          m
+\end{lstlisting}
+
+Consider the \lstinline{collapse} command below. It collapses across all of the observations to make a single record with the average age of the kids.
+
+\begin{lstlisting}
+collapse age
+list
+           age
+  1.  5.111111
+\end{lstlisting}
+
+The above \lstinline{collapse} command was not very useful, but you can combine it with the \lstinline{by(famid)} option, and then it creates one record for each family that contains the average age of the kids in the family.
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/kids", clear
+collapse age, by(famid)
+list
+         famid        age
+  1.         1          6
+  2.         2   5.333333
+  3.         3          4
+\end{lstlisting}
+
+The following \lstinline{collapse} command does the exact same thing as above, except that the average of age is named avgage and we have explicitly told the \lstinline{collapse} command that we want it to compute the mean.
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/kids", clear
+collapse (mean) avgage=age, by(famid)
+list
+         famid     avgage
+  1.         1          6
+  2.         2   5.333333
+  3.         3          4
+\end{lstlisting}
+
+We can request averages for more than one variable. Here we get the average for \textit{age} and for \textit{wt} all in the same command.
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/kids", clear
+collapse (mean) avgage=age avgwt=wt, by(famid)
+list
+         famid     avgage      avgwt
+  1.         1          6         40
+  2.         2   5.333333         50
+  3.         3          4         40
+\end{lstlisting}
+
+This command gets the average of \lstinline{age} and \lstinline{wt} like the command above, and also computes \lstinline{numkids} which is the count of the number of kids in each family (obtained by counting the number of observations with valid values of \lstinline{birth}).
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/kids", clear
+collapse (mean) avgage=age avgwt=wt (count) numkids=birth, by(famid)
+list
+         famid     avgage      avgwt    numkids
+  1.         1          6         40          3
+  2.         2   5.333333         50          3
+  3.         3          4         40          3
+\end{lstlisting}
+
+Suppose you wanted a count of the number of boys and girls in the family. We can do that with one extra step. We will create a dummy variable that is 1 if the kid is a boy (0 if not), and a dummy variable that is 1 if the kid is a girl (and 0 if not). The sum of the \lstinline{boy} dummy variable is the number of boys and the sum of the \lstinline{girl} dummy variable is the number of girls.
+
+First, let's use the kids file (and clear out the existing data).
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/kids", clear
+\end{lstlisting}
+
+We use \lstinline{tabulate} with the \lstinline{generate} option to make the dummy variables.
+
+\begin{lstlisting}
+tabulate sex, generate(sexdum)
+        sex |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          f |          4       44.44       44.44
+          m |          5       55.56      100.00
+------------+-----------------------------------
+      Total |          9      100.00
+\end{lstlisting}
+
+We can look at the dummy variables. \textit{Sexdum1} is the dummy variable for girls. \textit{Sexdum2} is the dummy variable for boys. The sum of \textit{sexdum1} is the number of girls in the family. The sum of \textit{sexdum2} is the number of boys in the family.
+
+\begin{lstlisting}
+list famid sex sexdum1 sexdum2
+          famid        sex   sexdum1   sexdum2
+  1.         1          f         1         0
+  2.         1          m         0         1
+  3.         1          f         1         0
+  4.         2          m         0         1
+  5.         2          m         0         1
+  6.         2          f         1         0
+  7.         3          m         0         1
+  8.         3          f         1         0
+  9.         3          m         0         1
+\end{lstlisting}
+
+The command below creates \textit{girls} which is the number of girls in the family, and \textit{boys} which is the number of boys in the family.
+
+\begin{lstlisting}
+collapse (count) numkids=birth (sum) girls=sexdum1 boys=sexdum2, by(famid)
+\end{lstlisting}
+
+We can list out the data to confirm that it worked correctly.
+
+\begin{lstlisting}
+list famid boys girls numkids
+         famid      boys     girls    numkids
+  1.         1         1         2          3
+  2.         2         2         1          3
+  3.         3         2         1          3
+\end{lstlisting}
+
+
+\subsubsection{Summary}
+
+\begin{compactitem}
+\item To create one record per family (famid) with the average of age within each family.
+\begin{lstlisting}
+collapse age, by(famid)
+\end{lstlisting}
+\item To create one record per family (famid) with the average of age (called avgage) and average weight (called avgwt) within each family.
+\begin{lstlisting}
+collapse (mean) avgage=age avgwt=wt,  by(famid)
+\end{lstlisting}
+\item Same as above example, but also counts the number of kids within each family calling that numkids.
+\begin{lstlisting}
+collapse (mean) avgage=age  avgwt=wt (count) numkids=birth, by(famid)
+\end{lstlisting}
+\item Counts the number of boys and girls in each family by using tabulate to create dummy variables based on sex and then summing the dummy variables within each family.
+\begin{lstlisting}
+tabulate sex, generate(sexdum)
+collapse (sum) girls=sexdum1 boys=sexdum2, by(famid)
+\end{lstlisting}
+\end{compactitem}
+
+\subsection{Working across variables using \lstinline{foreach}}
+
+\subsubsection{Introduction}
+
+This module illustrates
+\begin{compactenum}
+\item how to create and recode variables manually and
+\item how to use \lstinline{foreach} to ease the process of creating and recoding variables.
+\end{compactenum}
+
+Consider the sample program below, which reads in income data for twelve months.
+
+\begin{lstlisting}
+input famid inc1-inc12
+1 3281 3413 3114 2500 2700 3500 3114 3319 3514 1282 2434 2818
+2 4042 3084 3108 3150 3800 3100 1531 2914 3819 4124 4274 4471
+3 6015 6123 6113 6100 6100 6200 6186 6132 3123 4231 6039 6215
+end
+
+list
+\end{lstlisting}
+
+The output is shown below
+
+\begin{lstlisting}
+famid inc1 inc2 inc3 inc4 inc5 inc6 inc7 inc8 inc9 inc10 inc11 inc12
+1     3281 3413 3114 2500 2700 3500 3114 3319 3514 1282  2434  2818
+2     4042 3084 3108 3150 3800 3100 1531 2914 3819 4124  4274  4471
+3     6015 6123 6113 6100 6100 6200 6186 6132 3123 4231  6039  6215
+\end{lstlisting}
+
+\subsubsection{Computing variables (manually)}
+
+Say that we wanted to compute the amount of tax (10\%) paid for each month, the simplest way to do this is to compute 12 variables (\textit{taxinc1-taxinc12}) by multiplying each of the (\textit{inc1-inc12}) by .10 as illustrated below.  As you see, this requires entering a command computing the tax for each month of data (for months 1 to 12) via the \lstinline{generate} command.
+
+\begin{lstlisting}
+generate taxinc1 = inc1 * .10
+generate taxinc2 = inc2 * .10
+generate taxinc3 = inc3 * .10
+generate taxinc4 = inc4 * .10
+generate taxinc5 = inc5 * .10
+generate taxinc6 = inc6 * .10
+generate taxinc7 = inc7 * .10
+generate taxinc8 = inc8 * .10
+generate taxinc9 = inc9 * .10
+generate taxinc10= inc10 * .10
+generate taxinc11= inc11 * .10
+generate taxinc12= inc12 * .10
+\end{lstlisting}
+
+The output is omitted.
+
+\subsubsection{Computing variables (using the \lstinline{foreach} command)}
+
+Another way to compute 12 variables representing the amount of tax paid (10\%) for each month is to use the \lstinline{foreach} command.  In the example below we use the \lstinline{foreach} command to cycle through the variables \textit{inc1} to \textit{inc12} and compute the taxable income as \textit{taxinc1} - \textit{taxinc12}.
+
+\begin{lstlisting}
+foreach var of varlist inc1-inc12 {
+  generate tax`var' = `var' * .10
+}
+\end{lstlisting}
+
+The initial foreach statement tells Stata that we want to cycle through the variables \textit{inc1} to \textit{inc12} using the statements that are surrounded by the curly braces.  The first time we cycle through the statements, the value of var will be \textit{inc1}  and the second time the value of var will  be \textit{inc2} and so on until the final iteration where the value of var will be \textit{inc12}.  Each statement within the loop (in this case, just the one generate statement) is evaluated and executed. When we are inside the foreach loop, we can access the value of var by surrounding it with the funny quotation marks like this \lstinline{`var'} . The \lstinline{`} is the quote right below the \lstinline{~} on your keyborad and the \lstinline{'} is the quote below the \lstinline{"} on your keyboard. The first time through the loop, \lstinline{`var'} is replaced with \textit{inc1}, so the statement
+
+\begin{lstlisting}
+generate tax`var' = `var' * .10
+\end{lstlisting}
+becomes
+\begin{lstlisting}
+generate taxinc1 = inc1 * .10
+\end{lstlisting}
+
+This is repeated for \textit{inc2} and then \textit{inc3} and so on until \textit{inc12}. So, this \lstinline{foreach} loop is the equivalent of executing the 12 \lstinline{generate} statements manually, but much easier and less error prone.
+
+\subsubsection{Collapsing across variables (manually)}
+Often one needs to sum across variables (also known as collapsing across variables).  For example, let's say the quarterly income for each observation is desired.  In order to get this information, four quarterly variables \textit{incqtr1-incqtr4} need to be computed. Again, this can be achieved manually or by using the foreach command. Below is an example of how to compute 4 quarterly income variables \textit{incqtr1-incqtr4} by simply adding together the months that comprise a quarter.
+
+\begin{lstlisting}
+generate incqtr1 = inc1 + inc2 + inc3
+generate incqtr2 = inc4 + inc5 + inc6
+generate incqtr3 = inc7 + inc8 + inc9
+generate incqtr4 = inc10+ inc11+ inc12
+
+list incqtr1 - incqtr4
+\end{lstlisting}
+The output is shown below.
+
+\begin{lstlisting}
+     +---------------------------------------+
+     | incqtr1   incqtr2   incqtr3   incqtr4 |
+     |---------------------------------------|
+  1. |    9808      8700      9947      6534 |
+  2. |   10234     10050      8264     12869 |
+  3. |   18251     18400     15441     16485 |
+     +---------------------------------------+
+\end{lstlisting}
+
+\subsubsection{Collapsing across variables (using the \lstinline{foreach} command)}
+This same result as above can be achieved using the \lstinline{foreach} command. The example below illustrates how to compute the quarterly income variables \textit{incqtr1-incqtr4} using the \lstinline{foreach} command.
+
+\begin{lstlisting}
+foreach qtr of numlist 1/4 {
+  local m3 = `qtr'*3
+  local m2 = (`qtr'*3)-1
+  local m1 = (`qtr'*3)-2
+  generate incqtr`qtr' = inc`m1' + inc`m2' + inc`m3'
+}
+list incqtr1 - incqtr4
+\end{lstlisting}
+
+The output is shown below.
+
+\begin{lstlisting}
+     +---------------------------------------+
+     | incqtr1   incqtr2   incqtr3   incqtr4 |
+     |---------------------------------------|
+  1. |    9808      8700      9947      6534 |
+  2. |   10234     10050      8264     12869 |
+  3. |   18251     18400     15441     16485 |
+     +---------------------------------------+
+\end{lstlisting}
+
+In this example, instead of cycling across variables, the \lstinline{foreach} command is cycling across numbers, 1, 2, 3 then 4 which we refer to as \textit{qtr} which represent the 4 quarters of variables that we wish to create.  The trick is the relationship between the quarter and the month numbers that compose the quarter and to create a kind of formula that relates the quarters to the months.  For example, quarter 1 of data corresponds to months 3, 2 and 1, so we can say that when the quarter (qtr) is 1 we want the months represented by qtr*3, (qtr*3)-1 and (qtr*3)-2, yielding 3, 2, and 1.  This is what the statements below from the \lstinline{foreach} loop are doing.  They are relating the quarter to the months.
+
+\begin{lstlisting}
+  local m3 = `qtr'*3
+  local m2 = (`qtr'*3)-1
+  local m1 = (`qtr'*3)-2
+\end{lstlisting}
+
+So, when \textit{qtr} is 1, the value for \textit{m3} is $1*3$, the value for \textit{m2} is $(1*3)-1$ and the value for \textit{m1} is $(1*3)-2$.  Then, imagine all of those values being substituted into the following statement from the \lstinline{foreach} loop.
+
+\begin{lstlisting}
+generate incqtr`qtr' = inc`m1' + inc`m2' + inc`m3'
+\end{lstlisting}
+
+This then becomes
+
+\begin{lstlisting}
+generate incqtr1 = inc3 + inc2 + inc1
+\end{lstlisting}
+
+and for the next quarter (when \textit{qtr} becomes 2) the statement would become
+
+\begin{lstlisting}
+generate incqtr2 = inc6 + inc5 + inc4
+\end{lstlisting}
+
+In this example, with only 4 quarters of data, it would probably be easier to simply write out the 4 \lstinline{generate} statements manually, however if you had 40 quarters of data, then the \lstinline{foreach} loop can save you considerable time, effort and mistakes.
+
+\subsubsection{Identifying patterns across variables (using the \lstinline{foreach} command)}
+
+The \lstinline{foreach} command can also be used to identify patterns across variables of a dataset.  Let's say, for example, that one needs to know which months had income that was less than the income of the previous month. To obtain this information, dummy indicators can be created to indicate in which months this occurred. Note that only 11 dummy indicators are needed for a 12 month period because the interest is in the change from one month to the next.  When a month has income that is less than the income of the previous month, the dummy indicators \textit{lowinc2}-\textit{lowinc12} get assigned a ``1''.  When this is not the case, they are assigned a ``0''.   This program is illustrated below (note for simplicity we assume no missing data on income).
+
+\begin{lstlisting}
+foreach curmon of numlist 2/12 {
+  local lastmon = `curmon' - 1
+  generate lowinc`curmon' = 1 if ( inc`curmon' <  inc`lastmon' )
+  replace  lowinc`curmon' = 0 if ( inc`curmon' >= inc`lastmon' )
+}
+\end{lstlisting}
+
+We can list out the original values of \lstinline{inc} and \lstinline{lowinc} and verify that this worked properly
+
+\begin{lstlisting}
+list famid inc1-inc12, clean noobs
+famid inc1 inc2 inc3 inc4 inc5 inc6 inc7 inc8 inc9 inc10 inc11 inc12
+1     3281 3413 3114 2500 2700 3500 3114 3319 3514  1282  2434  2818
+2     4042 3084 3108 3150 3800 3100 1531 2914 3819  4124  4274  4471
+3     6015 6123 6113 6100 6100 6200 6186 6132 3123  4231  6039  6215
+list famid lowinc2-lowinc12, clean noobs
+
+famid lowinc2 lowinc3 lowinc4 lowinc5 lowinc6 lowinc7 lowinc8 lowinc9 lowinc10 //omitted
+    1       0       1       1       0       0       1       0       0        1
+    2       1       0       0       0       1       1       0       0        0
+    3       0       1       1       0       0       1       1       1        0
+\end{lstlisting}
+
+This time we used the \lstinline{foreach} loop to compare the current month, represented by \lstinline{curmon}, and the prior month, computed as \lstinline{`curmon'-1} creating lastmon.  So, for the first pass through the \lstinline{foreach} loop the value for \lstinline{curmon} is 2 and the value for \lstinline{lastmon} is 1, so the \lstinline{generate} and \lstinline{replace} statements become
+
+\begin{lstlisting}
+generate lowinc2 = 1 if ( inc2 <  inc1 )
+replace  lowinc2 = 0 if ( inc2 >= inc1 )
+\end{lstlisting}
+
+The process is repeated until curmon is 12, and then the \lstinline{generate} and \lstinline{replace} statements become
+
+\begin{lstlisting}
+generate lowinc12 = 1 if ( inc12 <  inc11 )
+replace  lowinc12 = 0 if ( inc12 >= inc11 )
+\end{lstlisting}
+
+If you were using \lstinline{foreach} to span a large range of values (say 1/1000) then it is more effcient to use \lstinline{forvalues} since it is designed to quickly increment through a sequential list, for example
+
+\begin{lstlisting}
+forvalues curmon = 2/12 {
+  local lastmon = `curmon' - 1
+  generate lowinc`curmon' = 1 if ( inc`curmon' <  inc`lastmon' )
+  replace  lowinc`curmon' = 0 if ( inc`curmon' >= inc`lastmon' )
+}
+\end{lstlisting}
+
+\subsection{Combining data}
+
+This module will illustrate how you can combine files in Stata. Examples will include appending files, one to one match merging, and one to many match merging.
+
+\subsubsection{Appending data files}
+When you have two data files, you may want to combine them by stacking them one on top of the other. For example, we have a file containing \textit{dads} and a file containing \textit{moms} as shown below.
+
+\begin{lstlisting}
+input famid str4 name inc
+2 "Art" 22000
+1 "Bill" 30000
+3 "Paul" 25000
+end
+save dads, replace
+list
+         famid       name        inc
+  1.         2        Art      22000
+  2.         1       Bill      30000
+  3.         3       Paul      25000
+clear
+input famid str4 name inc
+1 "Bess" 15000
+3 "Pat" 50000
+2 "Amy" 18000
+end
+save moms, replace
+list
+         famid       name        inc
+  1.         1       Bess      15000
+  2.         3        Pat      50000
+  3.         2        Amy      18000
+\end{lstlisting}
+
+If we wanted to combine these files by stacking them one atop the other, we can use the \lstinline{append} command as shown below.
+
+\begin{lstlisting}
+use dads, clear
+append using moms
+\end{lstlisting}
+
+We can use the \lstinline{list} command to see if this worked correctly.
+
+\begin{lstlisting}
+list
+         famid       name        inc
+  1.         2        Art      22000
+  2.         1       Bill      30000
+  3.         3       Paul      25000
+  4.         1       Bess      15000
+  5.         3        Pat      50000
+  6.         2        Amy      18000
+\end{lstlisting}
+
+The \lstinline{append} worked properly \ldots the \textit{dads} and \textit{moms} are stacked together in one file. But, there is a little problem. We can't tell the \textit{dads} from the \textit{moms}. Let's try doing this again, but first we will create a variable called momdad in the \textit{dads} and \textit{moms} data file which will contain dad for the \textit{dads} data file and mom for the \textit{moms} data file. When we combine the two files together, the \textit{momdad} variable will tell us who the \textit{moms} and \textit{dads} are.
+
+Here we make \textit{momdad} variable for the \textit{dads} data file. We save the file calling it dads1.
+
+\begin{lstlisting}
+use dads, clear
+generate str3 momdad = "dad"
+save dads1
+ file dads1.dta saved
+\end{lstlisting}
+
+Here we make \textit{momdad} variable for the \textit{moms} data file. We \lstinline{save} the file calling it \textit{moms1}.
+
+\begin{lstlisting}
+use moms, clear
+generate str3 momdad = "mom"
+save moms1
+ file moms1.dta saved
+\end{lstlisting}
+
+Now, let's append \textit{dads1} and \textit{moms1} together.
+
+\begin{lstlisting}
+use dads1, clear
+append using moms1
+\end{lstlisting}
+
+Now, when we list the data the \textit{momdad} variable shows who the moms and dads are.
+
+\begin{lstlisting}
+list
+         famid       name        inc     momdad
+  1.         2        Art      22000        dad
+  2.         1       Bill      30000        dad
+  3.         3       Paul      25000        dad
+  4.         1       Bess      15000        mom
+  5.         3        Pat      50000        mom
+  6.         2        Amy      18000        mom
+\end{lstlisting}
+
+\subsubsection{Match merging}
+
+Another way of combining data files is match merging. Say that we wanted to combine the \textit{dads} with the \textit{faminc} data file, having the dads information and the family information side by side. We can do this with a match merge.
+
+Let's have a look at the \textit{dads} and \textit{faminc} file.
+
+\begin{lstlisting}
+use dads, clear
+list
+         famid       name        inc
+  1.         2        Art      22000
+  2.         1       Bill      30000
+  3.         3       Paul      25000
+clear
+input famid faminc96 faminc97 faminc98
+3 75000 76000 77000
+1 40000 40500 41000
+2 45000 45400 45800
+end
+save faminc, replace
+list
+         famid   faminc96   faminc97   faminc98
+  1.         3      75000      76000      77000
+  2.         1      40000      40500      41000
+  3.         2      45000      45400      45800
+\end{lstlisting}
+
+We want to combine the data files so they look like this.
+
+\begin{lstlisting}
+famid name  inc    faminc96 faminc97 faminc98
+ 1     Bill  30000  40000    40500    41000
+ 2     Art   22000  45000    45400    45800
+ 3     Paul  25000  75000    76000    77000
+\end{lstlisting}
+
+Notice that the \textit{famid} variable is used to associate the observation from the \textit{dads} file with the appropriate observation from the faminc file.  The strategy for merging the files goes like this.
+\begin{compactenum}
+\item sort \textit{dads} on \textit{famid} and \lstinline{save} that file (calling it \textit{dads2}).
+\item sort faminc on \textit{famid} and \lstinline{save} that file (calling it \textit{faminc2}).
+\item use the \textit{dads2} file.
+\item merge the \textit{dads2} file with the \textit{faminc2} file using \textit{famid} to match them.
+\end{compactenum}
+
+Here are those four steps.
+\begin{compactenum}
+\item Sort the dads file by \textit{famid} and \lstinline{save} it as \textit{dads2}
+\begin{lstlisting}
+use dads, clear
+sort famid
+save dads2
+ file dads2.dta saved
+\end{lstlisting}
+\item Sort the \textit{faminc} file by \textit{famid} and \lstinline{save} it as \textit{faminc2}.
+\begin{lstlisting}
+use faminc, clear
+sort famid
+save faminc2
+ file faminc2.dta saved
+\end{lstlisting}
+\item Use the \textit{dads2} file
+\begin{lstlisting}
+use dads2, clear
+\end{lstlisting}
+\item Merge with the \textit{faminc2} file using \textit{famid} as the key variable.
+\begin{lstlisting}
+merge famid using faminc2
+\end{lstlisting}
+\end{compactenum}
+It seems like this worked just fine, but what is that \lstinline{_merge} variable?
+
+\begin{lstlisting}
+list, nodisplay noobs
+     famid       name        inc   faminc96   faminc97   faminc98    _merge
+        1       Bill      30000      40000      40500      41000         3
+        2        Art      22000      45000      45400      45800         3
+        3       Paul      25000      75000      76000      77000         3
+\end{lstlisting}
+
+The \lstinline{_merge} variable indicates, for each observation, how the merge went. This is useful for identifying mismatched records. \lstinline{_merge} can have one of three values
+\begin{compactenum}
+\item The record contains information from file1 only (e.g., a \textit{dad2} record with no corresponding \textit{faminc2} record.
+\item The record contains information from file2 only (e.g., a \textit{faminc2} record with no corresponding \textit{dad2} record.
+\item The record contains information from both files (e.g., the \textit{dad2} and \textit{faminc2} records matched up).
+\end{compactenum}
+
+When you have many records, tabulating \lstinline{_merge} is very useful to summarize how many mismatched you have. In our case, all of the records match so the value for \lstinline{_merge} was always 3.
+
+\begin{lstlisting}
+tabulate _merge
+     _merge |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          3 |          3      100.00      100.00
+------------+-----------------------------------
+      Total |          3      100.00
+\end{lstlisting}
+
+\subsubsection{One-to-many match merging}
+
+Another kind of merge is called a \textit{one to many} merge. Our \textit{one to one} merge matched up \textit{dads} and \textit{faminc} and there was a one to one matching of the files. If we merge \textit{dads} with \textit{kids}, there can be multiple kids per dad and hence this is a \textit{one to many} merge.
+
+As you see below, the strategy for the \textit{one to many} merge is really the same as the \textit{one to one} merge.
+
+\begin{compactenum}
+\item sort dads on \textit{famid} and \lstinline{save} that file as \textit{dads3}
+\item sort kids on \textit{famid} and \lstinline{save} that file as \textit{kids3}
+\item use the \textit{dads3} file
+\item merge the \textit{dads3} file with the \textit{kids3} file using \textit{famid} to match them.
+\end{compactenum}
+
+The 4 steps are shown below.
+
+\begin{compactenum}
+\item Sort the \textit{dads} data file on \textit{famid} and \lstinline{save} that file as \textit{dads3}.
+\begin{lstlisting}
+use dads, clear
+sort famid
+save dads3
+ file dads3.dta saved
+list
+         famid       name        inc
+  1.         1       Bill      30000
+  2.         2        Art      22000
+  3.         3       Paul      25000
+\end{lstlisting}
+\item Sort the \textit{kids} data file on \textit{famid} and \lstinline{save} that file as \textit{kids3}.
+\begin{lstlisting}
+clear
+input famid str4 kidname birth age wt str1 sex
+1 "Beth" 1 9 60 "f"
+2 "Andy" 1 8 40 "m"
+3 "Pete" 1 6 20 "f"
+1 "Bob" 2 6 80 "m"
+1 "Barb" 3 3 50 "m"
+2 "Al" 2 6 20 "f"
+2 "Ann" 3 2 60 "m"
+3 "Pam" 2 4 40 "f"
+3 "Phil" 3 2 20 "m"
+end
+
+sort famid
+
+save kids3
+file kids3.dta saved
+
+list
+         famid    kidname      birth        age         wt        sex
+  1.         1       Beth          1          9         60          f
+  2.         1        Bob          2          6         40          m
+  3.         1       Barb          3          3         20          f
+  4.         2       Andy          1          8         80          m
+  5.         2         Al          2          6         50          m
+  6.         2        Ann          3          2         20          f
+  7.         3       Pete          1          6         60          m
+  8.         3        Pam          2          4         40          f
+  9.         3       Phil          3          2         20          m
+\end{lstlisting}
+\item Use the \textit{dads3} file.
+\begin{lstlisting}
+use dads3, clear
+\end{lstlisting}
+\item Merge the \textit{dads3} file with the \textit{kids3} file using \textit{famid} to match them.
+\begin{lstlisting}
+merge famid using kids3
+\end{lstlisting}
+\end{compactenum}
+
+Let's list out the results.
+
+\begin{lstlisting}
+list famid name kidname birth age _merge
+       famid   name   kidname   birth   age   _merge
+  1.       1   Bill      Barb       3     3        3
+  2.       2    Art        Al       2     6        3
+  3.       3   Paul       Pam       2     4        3
+  4.       1   Bill       Bob       2     6        3
+  5.       1   Bill      Beth       1     9        3
+  6.       2    Art      Andy       1     8        3
+  7.       2    Art       Ann       3     2        3
+  8.       3   Paul      Phil       3     2        3
+  9.       3   Paul      Pete       1     6        3
+\end{lstlisting}
+
+The results are a bit easier to read if we sort the data on \textit{famid} and \textit{birth}.
+
+\begin{lstlisting}
+sort famid birth
+list famid name kidname birth age _merge
+         famid       name    kidname      birth        age    _merge
+  1.         1       Bill       Beth          1          9         3
+  2.         1       Bill        Bob          2          6         3
+  3.         1       Bill       Barb          3          3         3
+  4.         2        Art       Andy          1          8         3
+  5.         2        Art         Al          2          6         3
+  6.         2        Art        Ann          3          2         3
+  7.         3       Paul       Pete          1          6         3
+  8.         3       Paul        Pam          2          4         3
+  9.         3       Paul       Phil          3          2         3
+\end{lstlisting}
+
+As you see, this is basically the same as a \textit{one to one} merge. You may wonder if the order of the files on the merge statement is relevant. Here, we switch the order of the files and the results are the same. The only difference is the order of the records after the merge.
+
+\begin{lstlisting}
+use kids3, clear
+merge famid using dads3
+list famid name kidname birth age
+         famid       name    kidname      birth        age
+  1.         1       Bill       Beth          1          9
+  2.         1       Bill        Bob          2          6
+  3.         1       Bill       Barb          3          3
+  4.         2        Art       Andy          1          8
+  5.         2        Art         Al          2          6
+  6.         2        Art        Ann          3          2
+  7.         3       Paul       Pete          1          6
+  8.         3       Paul        Pam          2          4
+  9.         3       Paul       Phil          3          2
+\end{lstlisting}
+
+\subsubsection{Summary}
+\begin{compactitem}
+\item Appending data example
+\begin{lstlisting}
+use dads, clear
+append using moms
+\end{lstlisting}
+\item Match merge example steps (one-to-one and one-to-many)
+\begin{compactenum}
+\item sort \textit{dads} on \textit{famid} and save that file
+\item sort \textit{kids} on \textit{famid} and save that file
+\item use the \textit{dads} file
+\item merge the \textit{dads} file with the \textit{kids} file using \textit{famid} to match them.
+\end{compactenum}
+\item Match merge example program
+\begin{lstlisting}
+use dads, clear
+sort famid
+save dads2
+
+use faminc, clear
+sort famid
+save faminc2
+
+use dads2, clear
+merge famid using faminc2
+\end{lstlisting}
+\end{compactitem}
+
+
+\subsection{Reshaping data wide to long}
+
+This module illustrates the power (and simplicity) of Stata in its ability to reshape data files. These examples take \textbf{wide} data files and reshape them into \textbf{long} form. These show common examples of reshaping data, but do not exhaustively demonstrate the different kinds of data reshaping that you could encounter.
+
+\subsubsection{Example 1: Reshaping data wide to long}
+Consider the family income data file below.
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/faminc.dta", clear
+list
+         famid   faminc96   faminc97   faminc98
+  1.         3      75000      76000      77000
+  2.         1      40000      40500      41000
+  3.         2      45000      45400      45800
+\end{lstlisting}
+
+This is called a \textbf{wide} format since the years of data are wide. We may want the data to be \textbf{long}, where each year of data is in a separate observation. The \lstinline{reshape} command can accomplish this, as shown below.
+
+\begin{lstlisting}
+reshape long faminc, i(famid) j(year)
+(note:  j = 96 97 98)
+
+Data                               wide   ->   long
+-----------------------------------------------------------------------------
+Number of obs.                        3   ->       9
+Number of variables                   4   ->       3
+j variable (3 values)                     ->   year
+xij variables:
+             faminc96 faminc97 faminc98   ->   faminc
+-----------------------------------------------------------------------------
+\end{lstlisting}
+
+The \lstinline{list} command shows that the data are now in \textbf{long} form, where each \textit{year} is represented as its own observation.
+
+\begin{lstlisting}
+list
+         famid       year     faminc
+  1.         1         96      40000
+  2.         1         97      40500
+  3.         1         98      41000
+  4.         2         96      45000
+  5.         2         97      45400
+  6.         2         98      45800
+  7.         3         96      75000
+  8.         3         97      76000
+  9.         3         98      77000
+\end{lstlisting}
+
+Let's look at the \textbf{wide} format and contrast it with the \textbf{long} format.
+
+The \lstinline{reshape wide} command puts the data back into \textbf{wide} format. We then list out the \textbf{wide} file.
+
+\begin{lstlisting}
+reshape wide
+(note:  j = 96 97 98)
+
+Data                               long   ->   wide
+-----------------------------------------------------------------------------
+Number of obs.                        9   ->       3
+Number of variables                   3   ->       4
+j variable (3 values)              year   ->   (dropped)
+xij variables:
+                                 faminc   ->   faminc96 faminc97 faminc98
+-----------------------------------------------------------------------------
+list
+         famid   faminc96   faminc97   faminc98
+  1.         1      40000      40500      41000
+  2.         2      45000      45400      45800
+  3.         3      75000      76000      77000
+\end{lstlisting}
+
+The \lstinline{reshape long} command puts the data back into \textbf{long} format. We then list out the \textbf{long} file.
+
+\begin{lstlisting}
+reshape long
+(note:  j = 96 97 98)
+
+Data                               wide   ->   long
+-----------------------------------------------------------------------------
+Number of obs.                        3   ->       9
+Number of variables                   4   ->       3
+j variable (3 values)                     ->   year
+xij variables:
+             faminc96 faminc97 faminc98   ->   faminc
+-----------------------------------------------------------------------------
+list
+         famid       year     faminc
+  1.         1         96      40000
+  2.         1         97      40500
+  3.         1         98      41000
+  4.         2         96      45000
+  5.         2         97      45400
+  6.         2         98      45800
+  7.         3         96      75000
+  8.         3         97      76000
+  9.         3         98      77000
+\end{lstlisting}
+
+Now let's look at the pieces of the original \lstinline{reshape} command.
+
+\begin{lstlisting}
+reshape long faminc, i(famid) j(year)
+\end{lstlisting}
+\begin{compactitem}
+\item \lstinline{long} tells \lstinline{reshape} that we want to go from wide to \lstinline{long}
+\item \lstinline{faminc} tells Stata that the \lstinline{stem} of the variable to be converted from \textbf{wide} to \textbf{long} is \textit{faminc}
+\item \lstinline{i(famid)} option tells reshape that famid is the unique identifier for records in their \lstinline{wide} format
+\item \lstinline{j(year)} tells reshape that the suffix of \textit{faminc} (i.e., 96 97 98) should be placed in a variable called \textit{year}
+\end{compactitem}
+
+\subsubsection{Example 2: Reshaping data wide to long}
+Consider the file containing the kids and their heights at 1 year of age (ht1) and at 2 years of age (ht2).
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/kidshtwt.dta", clear
+list famid birth ht1 ht2
+          famid      birth        ht1        ht2
+  1.         1          1        2.8        3.4
+  2.         1          2        2.9        3.8
+  3.         1          3        2.2        2.9
+  4.         2          1          2        3.2
+  5.         2          2        1.8        2.8
+  6.         2          3        1.9        2.4
+  7.         3          1        2.2        3.3
+  8.         3          2        2.3        3.4
+  9.         3          3        2.1        2.9
+\end{lstlisting}
+
+Lets reshape this data into a long format. The critical questions are:
+
+\noindent Q: What is the stem of the variable going from \textbf{wide} to long.\\
+A: The stem is \textit{ht}\\
+Q: What variable uniquely identifies an observation when it is in the \textbf{wide} form.\\
+A: \textit{famid} and \textit{birth} together uniquely identify the \textbf{wide} observations.\\
+Q: What do we want to call the variable which contains the suffix of \textit{ht}, i.e., 1 and 2.\\
+A: Lets call the suffix \textit{age}.
+
+With the answers to these questions, the reshape command will look like this.
+
+\begin{lstlisting}
+reshape long ht, i(famid birth) j(age)
+\end{lstlisting}
+
+Let's look at the \textbf{wide} data, and then the data reshaped to be \textbf{long}.
+
+\begin{lstlisting}
+list famid birth ht1 ht2
+         famid      birth        ht1        ht2
+  1.         1          1        2.8        3.4
+  2.         1          2        2.9        3.8
+  3.         1          3        2.2        2.9
+  4.         2          1          2        3.2
+  5.         2          2        1.8        2.8
+  6.         2          3        1.9        2.4
+  7.         3          1        2.2        3.3
+  8.         3          2        2.3        3.4
+  9.         3          3        2.1        2.9
+reshape long ht, i(famid birth) j(age)
+(note:  j = 1 2)
+
+Data                               wide   ->   long
+-----------------------------------------------------------------------------
+Number of obs.                        9   ->      18
+Number of variables                   7   ->       7
+j variable (2 values)                     ->   age
+xij variables:
+                                ht1 ht2   ->   ht
+-----------------------------------------------------------------------------
+list famid birth age ht
+         famid      birth        age         ht
+  1.         1          1          1        2.8
+  2.         1          1          2        3.4
+  3.         1          2          1        2.9
+  4.         1          2          2        3.8
+  5.         1          3          1        2.2
+  6.         1          3          2        2.9
+  7.         2          1          1          2
+  8.         2          1          2        3.2
+  9.         2          2          1        1.8
+ 10.         2          2          2        2.8
+ 11.         2          3          1        1.9
+ 12.         2          3          2        2.4
+ 13.         3          1          1        2.2
+ 14.         3          1          2        3.3
+ 15.         3          2          1        2.3
+ 16.         3          2          2        3.4
+ 17.         3          3          1        2.1
+ 18.         3          3          2        2.9
+\end{lstlisting}
+
+\subsubsection{Example 3: Reshaping data wide to long}
+
+The file with the kids heights at \textit{age 1} and \textit{age 2} also contains their weights at \textit{age 1} and \textit{age 2} (called \textit{wt1} and \textit{wt2}).
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/kidshtwt.dta", clear
+list famid birth ht1 ht2 wt1 wt2
+         famid      birth        ht1        ht2        wt1        wt2
+  1.         1          1        2.8        3.4         19         28
+  2.         1          2        2.9        3.8         21         28
+  3.         1          3        2.2        2.9         20         23
+  4.         2          1          2        3.2         25         30
+  5.         2          2        1.8        2.8         20         33
+  6.         2          3        1.9        2.4         22         33
+  7.         3          1        2.2        3.3         22         28
+  8.         3          2        2.3        3.4         20         30
+  9.         3          3        2.1        2.9         22         31
+\end{lstlisting}
+
+Let's reshape this data into a \textbf{long} format. This is basically the same as the previous command except that \textit{ht} is replaced with \textit{ht} \textit{wt}.
+
+\begin{lstlisting}
+reshape long ht wt, i(famid birth) j(age)
+\end{lstlisting}
+
+Let's look at the \textbf{wide} data, and then the data reshaped to be \textbf{long}.
+
+\begin{lstlisting}
+list famid birth ht1 ht2 wt1 wt2
+         famid      birth        ht1        ht2        wt1        wt2
+  1.         1          1        2.8        3.4         19         28
+  2.         1          2        2.9        3.8         21         28
+  3.         1          3        2.2        2.9         20         23
+  4.         2          1          2        3.2         25         30
+  5.         2          2        1.8        2.8         20         33
+  6.         2          3        1.9        2.4         22         33
+  7.         3          1        2.2        3.3         22         28
+  8.         3          2        2.3        3.4         20         30
+  9.         3          3        2.1        2.9         22         31
+reshape long ht wt, i(famid birth) j(age)
+(note:  j = 1 2)
+
+Data                               wide   ->   long
+-----------------------------------------------------------------------------
+Number of obs.                        9   ->      18
+Number of variables                   7   ->       6
+j variable (2 values)                     ->   age
+xij variables:
+                                ht1 ht2   ->   ht
+                                wt1 wt2   ->   wt
+-----------------------------------------------------------------------------
+list famid birth age ht wt
+          famid      birth        age         ht         wt
+  1.         1          1          1        2.8         19
+  2.         1          1          2        3.4         28
+  3.         1          2          1        2.9         21
+  4.         1          2          2        3.8         28
+  5.         1          3          1        2.2         20
+  6.         1          3          2        2.9         23
+  7.         2          1          1          2         25
+  8.         2          1          2        3.2         30
+  9.         2          2          1        1.8         20
+ 10.         2          2          2        2.8         33
+ 11.         2          3          1        1.9         22
+ 12.         2          3          2        2.4         33
+ 13.         3          1          1        2.2         22
+ 14.         3          1          2        3.3         28
+ 15.         3          2          1        2.3         20
+ 16.         3          2          2        3.4         30
+ 17.         3          3          1        2.1         22
+ 18.         3          3          2        2.9         31
+\end{lstlisting}
+
+\subsubsection{Example 4: Reshaping data wide to long with character suffixes}
+
+It also is possible to reshape a wide data file to be long when there are character suffixes. Look at the \lstinline{dadmomw} file below.
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/dadmomw.dta", clear
+list
+         famid      named       incd      namem       incm
+  1.         1       Bill      30000       Bess      15000
+  2.         2        Art      22000        Amy      18000
+  3.         3       Paul      25000        Pat      50000
+\end{lstlisting}
+
+We would like to make \textit{name} and \textit{inc} into \textbf{long} formats but their suffixes are characters (d \& m) instead of numbers. Stata can handle that as long as you use \lstinline{string} in the command to indicate that the suffix is a character.
+
+\begin{lstlisting}
+reshape long name  inc, i(famid) j(dadmom) string
+\end{lstlisting}
+
+Let's look at the data before and after reshaping.
+
+\begin{lstlisting}
+list
+         famid      named       incd      namem       incm
+  1.         1       Bill      30000       Bess      15000
+  2.         2        Art      22000        Amy      18000
+  3.         3       Paul      25000        Pat      50000
+reshape long name inc, i(famid) j(dadmom) string
+(note:  j = d m)
+
+Data                               wide   ->   long
+-----------------------------------------------------------------------------
+Number of obs.                        3   ->       6
+Number of variables                   5   ->       4
+j variable (2 values)                     ->   dadmom
+xij variables:
+                            named namem   ->   name
+                              incd incm   ->   inc
+-----------------------------------------------------------------------------
+list
+         famid     dadmom       name        inc
+  1.         1          d       Bill      30000
+  2.         1          m       Bess      15000
+  3.         2          d        Art      22000
+  4.         2          m        Amy      18000
+  5.         3          d       Paul      25000
+  6.         3          m        Pat      50000
+\end{lstlisting}
+
+\subsubsection{Summary reshaping data wide to long}
+
+\begin{lstlisting}
+ Wide format
+          famid   faminc96   faminc97   faminc98
+  1.         1      40000      40500      41000
+  2.         2      45000      45400      45800
+  3.         3      75000      76000      77000
+
+reshape long faminc, i(famid) j(year)
+
+ Long Format
+         famid       year     faminc
+  1.         1         96      40000
+  2.         1         97      40500
+  3.         1         98      41000
+  4.         2         96      45000
+  5.         2         97      45400
+  6.         2         98      45800
+  7.         3         96      75000
+  8.         3         97      76000
+  9.         3         98      77000
+\end{lstlisting}
+
+The general syntax of \lstinline{reshape long} can be expressed as\ldots
+
+\begin{lstlisting}
+reshape long stem-of-wide-vars, i(wide-id-var)  j(var-for-suffix)
+\end{lstlisting}
+where
+\begin{compactitem}
+\item stem-of-wide-vars: is the stem of the wide variables, e.g., faminc
+\item wide-id-var: is the variable that uniquely identifies wide observations, e.g., famid
+\item var-for-suffix: is the variable that will contain the suffix of the wide variables, e.g., year
+\end{compactitem}
+
+
+\subsection{Reshaping data long to wide}
+
+This module illustrates the power (and simplicity) of Stata in its ability to reshape data files. These examples take \textbf{long} data files and reshape them into \textbf{wide} form. These examples cover some common examples, but this is only part of the features and options of the Stata \lstinline{reshape} command.
+
+\subsubsection{Example 1: Reshaping data long to wide}
+The \lstinline{reshape} command can be used to make data from a \textbf{long} format to a \textbf{wide} format. Consider the \lstinline{kids} file (to make things simple at first, we will drop the variables \textit{kidname}, \textit{sex} and \textit{wt}).
+
+\begin{lstlisting}
+use kids, clear
+drop  kidname sex wt
+list
+          famid      birth        age
+  1.         1          1          9
+  2.         1          2          6
+  3.         1          3          3
+  4.         2          1          8
+  5.         2          2          6
+  6.         2          3          2
+  7.         3          1          6
+  8.         3          2          4
+  9.         3          3          2
+\end{lstlisting}
+
+Let's make \textit{age} in this file wide, making one record per family which would contain \textit{age1} \textit{age2} \textit{age3}, the ages of the kids in the family (\textit{age2} would be missing if there is only one kid, and \textit{age3} would be missing if there are only two kids). Let's look at the data before and after reshaping.
+
+\begin{lstlisting}
+list
+          famid      birth        age
+  1.         1          1          9
+  2.         1          2          6
+  3.         1          3          3
+  4.         2          1          8
+  5.         2          2          6
+  6.         2          3          2
+  7.         3          1          6
+  8.         3          2          4
+  9.         3          3          2
+
+reshape wide age, i(famid)  j(birth)
+
+(note:  j = 1 2 3)
+
+Data                               long   ->   wide
+-----------------------------------------------------------------------------
+Number of obs.                        9   ->       3
+Number of variables                   3   ->       4
+j variable (3 values)             birth   ->   (dropped)
+xij variables:
+                                    age   ->   age1 age2 age3
+-----------------------------------------------------------------------------
+
+list
+
+          famid       age1       age2       age3
+  1.         1          9          6          3
+  2.         2          8          6          2
+  3.         3          6          4          2
+\end{lstlisting}
+
+Let's look at the pieces of the reshape command.
+
+\begin{lstlisting}
+reshape wide age, j(birth) i(famid)
+\end{lstlisting}
+\begin{compactitem}
+\item \lstinline{wide}: tells reshape that we want to go from long to wide
+\item \lstinline{age}: tells Stata that the variable to be converted from long to wide is \textit{age}
+\item \lstinline{i(famid)}: tells reshape that \textit{famid} uniquely identifies observations in the wide form
+\item \lstinline{j(birth)}: tells reshape that the suffix of \textit{age} (1 2 3) should be taken from the variable \textit{birth}
+\end{compactitem}
+
+\subsubsection{Example 2: Reshaping data long to wide with more than one variable}
+
+The \lstinline{reshape} command can work on more than one variable at a time. In the example above, we just reshaped the \textit{age} variable. In the example below, we reshape the variables \textit{age}, \textit{wt} and \textit{sex} like this
+
+\begin{lstlisting}
+reshape wide age wt sex, i(famid) j(birth)
+\end{lstlisting}
+
+Let's look at the data before and after reshaping.
+
+\begin{lstlisting}
+use kids, clear
+list
+          famid    kidname      birth        age         wt        sex
+  1.         1       Beth          1          9         60          f
+  2.         1        Bob          2          6         40          m
+  3.         1       Barb          3          3         20          f
+  4.         2       Andy          1          8         80          m
+  5.         2         Al          2          6         50          m
+  6.         2        Ann          3          2         20          f
+  7.         3       Pete          1          6         60          m
+  8.         3        Pam          2          4         40          f
+  9.         3       Phil          3          2         20          m
+
+reshape wide kidname age wt sex, i(famid) j(birth)
+
+ (note:  j = 1 2 3)
+
+Data                               long   ->   wide
+-----------------------------------------------------------------------------
+Number of obs.                        9   ->       3
+Number of variables                   6   ->      13
+j variable (3 values)             birth   ->   (dropped)
+xij variables:
+                                kidname   ->   kidname1 kidname2 kidname3
+                                    age   ->   age1 age2 age3
+                                     wt   ->   wt1 wt2 wt3
+                                    sex   ->   sex1 sex2 sex3
+-----------------------------------------------------------------------------
+
+list
+
+ Observation 1
+
+       famid            1    kidname1         Beth        age1            9
+         wt1           60        sex1            f    kidname2          Bob
+        age2            6         wt2           40        sex2            m
+    kidname3         Barb        age3            3         wt3           20
+        sex3            f
+
+
+Observation 2
+
+       famid            2    kidname1         Andy        age1            8
+         wt1           80        sex1            m    kidname2           Al
+        age2            6         wt2           50        sex2            m
+    kidname3          Ann        age3            2         wt3           20
+        sex3            f
+
+
+Observation 3
+
+       famid            3    kidname1         Pete        age1            6
+         wt1           60        sex1            m    kidname2          Pam
+        age2            4         wt2           40        sex2            f
+    kidname3         Phil        age3            2         wt3           20
+        sex3            m
+\end{lstlisting}
+
+\subsubsection{Example 3: Reshaping wide with character suffixes}
+
+The examples above showed how to reshape data using numeric suffixes, but \lstinline{reshape} can handle character suffixes as well. Consider the \lstinline{dadmoml} data file shown below.
+
+\begin{lstlisting}
+use dadmoml, clear
+list
+          famid       name        inc     dadmom
+  1.         2        Art      22000        dad
+  2.         1       Bill      30000        dad
+  3.         3       Paul      25000        dad
+  4.         1       Bess      15000        mom
+  5.         3        Pat      50000        mom
+  6.         2        Amy      18000        mom
+\end{lstlisting}
+
+Let's reshape this to be in a wide format, containing one record per family. The \lstinline{reshape} command below uses \lstinline{string} to tell reshape that the suffix is character.
+
+\begin{lstlisting}
+reshape wide name inc,  i(famid) j(dadmom) string
+\end{lstlisting}
+
+Let's look at the data before and after reshaping.
+
+\begin{lstlisting}
+list
+          famid       name        inc     dadmom
+  1.         2        Art      22000        dad
+  2.         1       Bill      30000        dad
+  3.         3       Paul      25000        dad
+  4.         1       Bess      15000        mom
+  5.         3        Pat      50000        mom
+  6.         2        Amy      18000        mom
+
+reshape wide name inc, i(famid) j(dadmom) string
+
+(note:  j = dad mom)
+
+Data                               long   ->   wide
+-----------------------------------------------------------------------------
+Number of obs.                        6   ->       3
+Number of variables                   4   ->       5
+j variable (2 values)            dadmom   ->   (dropped)
+xij variables:
+                                   name   ->   namedad namemom
+                                    inc   ->   incdad incmom
+-----------------------------------------------------------------------------
+
+list
+
+          famid    namedad     incdad    namemom     incmom
+  1.         1       Bill      30000       Bess      15000
+  2.         2        Art      22000        Amy      18000
+  3.         3       Paul      25000        Pat      50000
+\end{lstlisting}
+
+\subsubsection{Summary}
+\begin{compactitem}
+\item Reshaping data long to wide
+\begin{lstlisting}
+ Long format
+         famid      birth         age
+  1.         1          1          9
+  2.         1          2          6
+  3.         1          3          3
+  4.         2          1          8
+  5.         2          2          6
+  6.         2          3          2
+  7.         3          1          6
+  8.         3          2          4
+  9.         3          3          2
+
+reshape wide age, j(birth) i(famid)
+
+ Wide format
+         famid       age1       age2       age3
+  1.         1          9          6          3
+  2.         2          8          6          2
+  3.         3          6          4          2
+\end{lstlisting}
+
+\item The general syntax of reshape wide can be expressed as:
+\begin{lstlisting}
+reshape wide long-var(s),  i( wide-id-var ) j( var-with-suffix )
+\end{lstlisting}
+where
+\begin{compactitem}
+\item long-var(s): is the name of the long variable(s) to be made wide e.g. age
+\item wide-id-var: is the variable that uniquely identifies wide observations, e.g. famid
+\item var-with-suffix: is the variable from the long file that contains the suffix for the wide variables, e.g. birth
+\end{compactitem}
+\end{compactitem}

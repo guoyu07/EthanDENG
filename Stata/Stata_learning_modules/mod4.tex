@@ -1,0 +1,744 @@
+\section{Reading Data in Stata}
+\subsection{Using and saving files in Stata}
+\subsubsection{Using and saving Stata data files}
+
+The \lstinline{use} command gets a Stata data file from disk and places it in memory so you can analyze and/or modify it. A data file must be read into memory before you can analyze it. It is kind of like when you open a \textit{Word} document; you need to read a \textit{Word} document into \textit{Word} before you can work with it. The use command below gets the Stata data file called \lstinline{auto.dta} from disk and places it in memory so we can analyze and/or modify it. Since Stata data files end with \lstinline{.dta} you need only say \lstinline{use auto} and Stata knows to read in the file called \lstinline{auto.dta}.
+
+\begin{lstlisting}
+sysuse auto
+\end{lstlisting}
+
+The \lstinline{describe} command tells you information about the data that is currently sitting in memory.
+
+\begin{lstlisting}
+describe
+
+Contains data from auto.dta
+  obs:            74
+ vars:            12                          17 Feb 1999 10:49
+ size:         3,108 (99.6% of memory free)
+-------------------------------------------------------------------------------
+   1. make      str17  %17s
+   2. price     int    %9.0g
+   3. mpg       byte   %9.0g
+   4. rep78     byte   %9.0g
+   5. hdroom    float  %9.0g
+   6. trunk     byte   %9.0g
+   7. weight    int    %9.0g
+   8. length    int    %9.0g
+   9. turn      byte   %9.0g
+  10. displ     int    %9.0g
+  11. gratio    float  %9.0g
+  12. foreign   byte   %9.0g
+-------------------------------------------------------------------------------
+Sorted by:
+\end{lstlisting}
+
+Now that the data is in memory, we can analyze it. For example, the \lstinline{summarize} command gives summary statistics for the data currently in memory.
+
+\begin{lstlisting}
+summarize
+
+Variable |     Obs        Mean   Std. Dev.       Min        Max
+---------+-----------------------------------------------------
+    make |       0
+   price |      74    6165.257   2949.496       3291      15906
+     mpg |      74     21.2973   5.785503         12         41
+   rep78 |      69    3.405797   .9899323          1          5
+  hdroom |      74    2.993243   .8459948        1.5          5
+   trunk |      74    13.75676   4.277404          5         23
+  weight |      74    3019.459   777.1936       1760       4840
+  length |      74    187.9324   22.26634        142        233
+    turn |      74    39.64865   4.399354         31         51
+   displ |      74    197.2973   91.83722         79        425
+  gratio |      74    3.014865   .4562871       2.19       3.89
+ foreign |      74    .2972973   .4601885          0          1
+\end{lstlisting}
+
+Let's make a change to the data in memory. We will compute a variable called \textit{price2} which will be double the value of \textit{price}.
+
+\begin{lstlisting}
+generate price2 = 2*price
+\end{lstlisting}
+
+If we use the \lstinline{describe} command again, we see the variable we just created is part of the data in memory. We also see a note from Stata saying dataset has changed since last saved. Stata knows that the data in memory has changed, and would need to be saved to avoid losing the changes. It is like when you are editing a \textit{Word} document; if you don't save the data, any changes you make will be lost. If we shut the computer off before saving the changes, the changes we made would be lost.
+
+\begin{lstlisting}
+describe
+Contains data from auto.dta
+  obs:            74
+ vars:            13                          17 Feb 1999 10:49
+ size:         3,404 (99.6% of memory free)
+-------------------------------------------------------------------------------
+   1. make      str17  %17s
+   2. price     int    %9.0g
+   3. mpg       byte   %9.0g
+   4. rep78     byte   %9.0g
+   5. hdroom    float  %9.0g
+   6. trunk     byte   %9.0g
+   7. weight    int    %9.0g
+   8. length    int    %9.0g
+   9. turn      byte   %9.0g
+  10. displ     int    %9.0g
+  11. gratio    float  %9.0g
+  12. foreign   byte   %9.0g
+  13. price2    float  %9.0g
+-------------------------------------------------------------------------------
+Sorted by:
+     Note:  dataset has changed since last saved
+\end{lstlisting}
+
+The \lstinline{save} command is used to save the data in memory permanently on disk. Let's save this data and call it \lstinline{auto2} (Stata will save it as \lstinline{auto2.dta}).
+
+\begin{lstlisting}
+save auto2
+
+ file auto2.dta saved
+\end{lstlisting}
+
+Let's make another change to the dataset. We will compute a variable called \lstinline{price3} which will be three times the value of \lstinline{price}.
+
+\begin{lstlisting}
+generate price3 = 3*price
+\end{lstlisting}
+
+Let's try to save this data again to \lstinline{auto2}
+
+\begin{lstlisting}
+save auto2
+file auto2.dta already exists
+r(602);
+\end{lstlisting}
+
+Did you see how Stata said file \lstinline{auto2.dta} already exists? Stata is worried that you will accidentally overwrite your data file. You need to use the \lstinline{replace} option to tell Stata that you know that the file exists and you want to replace it.
+
+\begin{lstlisting}
+save auto2, replace
+
+file auto2.dta saved
+\end{lstlisting}
+
+Let's make another change to the data in memory by creating a variable called \textit{price4} that is four times the \textit{price}.
+
+\begin{lstlisting}
+generate price4 = price*4
+\end{lstlisting}
+
+Suppose we want to use the original \lstinline{auto} file and we don't care if we lose the changes we just made in memory (i.e., losing the variable \textit{price4}). We can try to use the \lstinline{auto} file.
+
+\begin{lstlisting}
+sysuse auto
+
+no; data in memory would be lost
+r(4);
+\end{lstlisting}
+
+See how Stata refused to \lstinline{use} the file, saying \lstinline{no; data in memory would be lost?} Stata did not want you to lose the changes that you made to the data sitting in memory. If you really want to discard the changes in memory, then use need to use the \lstinline{clear} option on the \lstinline{use} command, as shown below.
+
+\begin{lstlisting}
+sysuse auto, clear
+\end{lstlisting}
+
+Stata tries to protect you from losing your data by doing the following:
+\begin{compactenum}
+\item If you want to save a file over an existing file, you need to use the \lstinline{replace} option, e.g., \lstinline{save auto, replace}.
+\item If you try to \lstinline{use} a file and the file in memory has unsaved changes, you need to use the \lstinline{clear} option to tell Stata that you want to discard the changes, e.g., \lstinline{use auto, clear}.
+\end{compactenum}
+
+Before we move on to the next topic, let's clear out the data in memory.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+\subsubsection{Using files larger than 1 megabyte}
+
+When you use a data file, Stata reads the entire file into memory. By default, Stata limits the size of data in memory to 1 megabyte (PC version 6.0 Intercooled). You can view the amount of memory that Stata has reserved for data with the memory command.
+
+\begin{lstlisting}
+memory
+
+  Total memory                            1,048,576 bytes    100.00%
+
+  overhead (pointers)                             0            0.00%
+  data                                            0            0.00%
+                                       ------------
+  data + overhead                                 0            0.00%
+
+  programs, saved results, etc.               1,152            0.11%
+                                       ------------
+  Total                                       1,152            0.11%
+
+  Free                                    1,047,424           99.89%
+\end{lstlisting}
+
+If you try to \lstinline{use} a file which exceeds the amount of memory Stata has allocated for data, it will give you an error message like this.
+
+\begin{lstlisting}
+no room to add more observations
+r(901);
+\end{lstlisting}
+
+You can increase the amount of memory that Stata has allocated to data using the \lstinline{set memory} command. For example, if you had a data file which was 1.5 megabytes, you can set the memory to, say, 2 megabytes shown below.
+
+\begin{lstlisting}
+set memory 2m
+
+ (2048k)
+\end{lstlisting}
+
+Once you have increased the memory, you should be able to \lstinline{use} the data file if you have allocated enough memory for it.
+
+\subsubsection{Summary}
+\begin{compactitem}
+\item \lstinline{sysuse auto}: To \lstinline{use} the \lstinline{auto} file from disk and read it into memory
+\item \lstinline{save auto}: To save the file \lstinline{auto} from memory to disk
+\item \lstinline{save auto, replace}: To save a file if the file \lstinline{auto} already exists
+\item \lstinline{sysuse auto, clear}: to use a file \lstinline{auto} and \lstinline{clear} out the current data in memory
+\item \lstinline{clear}: If you want to \lstinline{clear} out the data in memory, you want to lose the changes
+\item \lstinline{set memory 2m}: To allocate 2 megabytes of memory for a data file.
+\item \lstinline{memory}: To view the allocation of memory to data and how much is used.
+\end{compactitem}
+
+%  next
+
+\subsection{Inputting your data into Stata}
+
+This module will show how to input your data into Stata. This covers inputting data with comma delimited, tab delimited, space delimited, and fixed column data.
+
+\textbf{Note}: all of the sample input files for this page were created by us and are not included with Stata.  You can create them yourself to try out this code by copying and pasting the data into a text file.
+
+
+\subsubsection{Typing data into the Stata editor}
+One of the easiest methods for getting data into Stata is using the Stata data editor, which resembles an Excel spreadsheet. It is useful when your data is on paper and needs to be typed in, or if your data is already typed into an Excel spreadsheet. To learn more about the Stata data editor, see the \textbf{edit} module.
+
+\subsubsection{Comma/tab separated file with variable names on line 1}
+Two common file formats for raw data are \textbf{comma separated} files and \textbf{tab separated} files. Such files are commonly made from spreadsheet programs like \textit{Excel}. Consider the \textbf{comma delimited} file shown below.
+
+
+\begin{lstlisting}
+type auto2.raw
+ make, mpg, weight, price
+AMC Concord, 22, 2930,    4099
+AMC Pacer,  17,  3350, 4749
+AMC Spirit,  22,  2640, 3799
+Buick Century,   20, 3250, 4816
+Buick Electra,  15,4080, 7827
+\end{lstlisting}
+
+This file has two characteristics:
+\begin{compactitem}
+\item The first line has the names of the variables separated by commas,
+\item The following lines have the values for the variables, also separated by commas.
+\end{compactitem}
+
+This kind of file can be read using the \lstinline{insheet} command, as shown below.
+
+\begin{lstlisting}
+insheet using auto2.raw
+
+ (4 vars, 5 obs)
+\end{lstlisting}
+
+We can check to see if the data came in right using the \lstinline{list} command.
+
+\begin{lstlisting}
+list
+              make       mpg    weight     price
+  1.   AMC Concord        22      2930      4099
+  2.     AMC Pacer        17      3350      4749
+  3.    AMC Spirit        22      2640      3799
+  4. Buick Century        20      3250      4816
+  5. Buick Electra        15      4080      7827
+\end{lstlisting}
+
+Since you will likely have more observations, you can use in to list just a subset of observations. Below, we \lstinline{list} observations 1 through 3.
+
+\begin{lstlisting}
+list in 1/3
+              make       mpg    weight     price
+  1.   AMC Concord        22      2930      4099
+  2.     AMC Pacer        17      3350      4749
+  3.    AMC Spirit        22      2640      3799
+\end{lstlisting}
+
+Now that the file has been read into Stata, you can save it with the \lstinline{save} command (we will skip doing that step).
+
+The exact same \lstinline{insheet} command could be used to read a \lstinline{tab delimited} file. The \lstinline{insheet} command is clever because it can figure out whether you have a \lstinline{comma delimited} or \lstinline{tab delimited} file, and then read it. (However, \lstinline{insheet} could not handle a file that uses a mixture of commas and tabs as delimiters.)
+
+Before starting the next section, let's clear out the existing data in memory.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+\subsubsection{Comma/tab separated file (no variable names in file)}
+
+Consider a file that is identical to the one we examined in the previous section, but it does not have the variable names on line 1
+
+\begin{lstlisting}
+type auto3.raw
+AMC Concord, 22, 2930, 4099
+AMC Pacer,  17,  3350, 4749
+AMC Spirit,  22,  2640, 3799
+Buick Century,   20, 3250, 4816
+Buick Electra,  15,4080, 7827
+\end{lstlisting}
+
+This file can be read using the \lstinline{insheet} command as shown below.
+
+\begin{lstlisting}
+insheet using auto3.raw
+ (4 vars, 5 obs)
+\end{lstlisting}
+
+But where did Stata get the variable names? If Stata does not have names for the variables, it names them \textit{v1}, \textit{v2}, \textit{v3} etc., as you can see below.
+
+\begin{lstlisting}
+list
+
+                v1        v2        v3        v4
+  1.   AMC Concord        22      2930      4099
+  2.     AMC Pacer        17      3350      4749
+  3.    AMC Spirit        22      2640      3799
+  4. Buick Century        20      3250      4816
+  5. Buick Electra        15      4080      7827
+\end{lstlisting}
+
+Let's clear out the data in memory, and then try reading the data again.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+Now, let's try reading the data and tell Stata the names of the variables on the \lstinline{insheet} command.
+
+\begin{lstlisting}
+insheet make mpg weight price using auto3.raw
+ (4 vars, 5 obs)
+\end{lstlisting}
+
+As the list command shows, Stata used the variable names supplied on the \lstinline{insheet} command.
+
+\begin{lstlisting}
+list
+
+              make       mpg    weight     price
+  1.   AMC Concord        22      2930      4099
+  2.     AMC Pacer        17      3350      4749
+  3.    AMC Spirit        22      2640      3799
+  4. Buick Century        20      3250      4816
+  5. Buick Electra        15      4080      7827
+\end{lstlisting}
+
+The \lstinline{insheet} command works equally well on files which use tabs as separators. Stata examines the file and determines whether commas or tabs are being used as separators and reads the file appropriately.
+
+Now that the file has been read into Stata, you can save it with the \lstinline{save} command (we will skip doing that step).
+
+Let's clear out the data in memory before going to the next section.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+\subsubsection{Space separated file}
+
+Consider a file where the variables are separated by spaces like the one shown below.
+
+\begin{lstlisting}
+type auto4.raw
+ "AMC Concord" 22  2930  4099
+"AMC Pacer"  17   3350  4749
+"AMC Spirit"  22   2640  3799
+"Buick Century"   20  3250  4816
+"Buick Electra"  15 4080  7827
+\end{lstlisting}
+
+Note that the make of car is contained within quotation marks. This is necessary because the names contain spaces within them. Without the quotes, Stata would think AMC is the \textit{make} and Concord is the \textit{mpg}. If the \textit{make} did not have spaces embedded within them, the quotation marks would not be needed.
+
+This file can be read with the \lstinline{infile} command as shown below.
+
+\begin{lstlisting}
+infile str13 make mpg weight price using auto4.raw
+ (5 observations read)
+\end{lstlisting}
+
+You may be asking yourself, where did the \textbf{str13} come from? Since \lstinline{make} is a character variable, we need to tell Stata that it is a character variable, and how long it can be. The \textbf{str13} tells Stata it is a \textbf{str}ing variable and that it could be up to 13 characters wide.
+
+The \lstinline{list} command confirms that the data was read correctly.
+
+\begin{lstlisting}
+list
+              make        mpg     weight      price
+  1.   AMC Concord         22       2930       4099
+  2.     AMC Pacer         17       3350       4749
+  3.    AMC Spirit         22       2640       3799
+  4. Buick Century         20       3250       4816
+  5. Buick Electra         15       4080       7827
+\end{lstlisting}
+
+Now that the file has been read into Stata, you can save it with the \lstinline{save} command (we will skip doing that step).
+
+Let's clear out the data in memory before moving on to the next section.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+\subsubsection{Fixed format file}
+
+Consider a file using fixed column data like the one shown below.
+
+\begin{lstlisting}
+type auto5.raw
+AMC Concord   22 2930 4099
+AMC Pacer     17 3350 4749
+AMC Spirit    22 2640 3799
+Buick Century 20 3250 4816
+Buick Electra 15 4080 7827
+\end{lstlisting}
+
+Note that the variables are clearly defined by which column(s) they are located. Also, note that the \textit{make} of car is not contained within quotation marks. The quotations are not needed because the columns define where the \textit{make} begins and ends, and the embedded spaces no longer create confusion.
+
+This file can be read with the \lstinline{infix} command as shown below.
+
+\begin{lstlisting}
+infix str make 1-13 mpg 15-16 weight 18-21 price 23-26 using auto5.raw
+
+(5 observations read)
+\end{lstlisting}
+
+Here again we need to tell Stata that \textit{make} is a \textbf{str}ing variable by preceding \textit{make} with \textbf{str}. We did not need to indicate the length since Stata can infer that \textit{make} can be up to 13 characters wide based on the column locations.
+
+The \lstinline{list} command confirms that the data was read correctly.
+
+\begin{lstlisting}
+list
+              make        mpg     weight      price
+  1.   AMC Concord         22       2930       4099
+  2.     AMC Pacer         17       3350       4749
+  3.    AMC Spirit         22       2640       3799
+  4. Buick Century         20       3250       4816
+  5. Buick Electra         15       4080       7827
+\end{lstlisting}
+
+Now that the file has been read into Stata, you can save it with the \lstinline{save} command (we will skip doing that step).
+
+Let's clear out the data in memory before moving on to the next section.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+\subsubsection{Other methods of getting data into Stata}
+
+This does not cover all possible methods of getting raw data into Stata, but does cover many common situations. See the Stata Users Guide for more comprehensive information on reading raw data into Stata.
+
+Another method that should be mentioned is the use of data conversion programs. These programs can convert data from one file format into another file format. For example, they could directly create a Stata file from an Excel Spreadsheet, a Lotus Spreadsheet, an Access database, a Dbase database, a SAS data file, an SPSS system file, etc. Two such examples are Stat Transfer and DBMS Copy. Both of these products are available on SSC PCs and DBMS Copy is available on Nicco and Aristotle.
+
+Finally, if you are using Nicco, Aristotle or the RS/6000 Cluster, there is a command specifically for converting SAS data into Stata called \textbf{sas2stata}. If you have SAS data you want to convert to Stata, this may be a useful way to get your SAS data into Stata.
+
+\subsubsection{Summary}
+
+\begin{compactitem}
+\item \lstinline{edit}: Bring up the Stata data editor for typing data in.
+\item \lstinline{insheet using auto2.raw, clear}: Read in the comma or tab delimited file called auto2.raw taking the variable names from the first line of data.
+\item \lstinline{insheet make mpg weight price  using auto3.raw, clear}: Read in the comma or tab delimited file called auto3.raw naming the variables mpg weight and price.
+\item \lstinline{infile str13 make mpg weight price  using auto4.raw, clear}: Read in the space separated file named auto4.raw. The variable make is surrounded by quotes because it has embedded blanks.
+\item \lstinline{infix str make 1-13 mpg 15-16 weight 18-21  using auto5.raw, clear}: Read in the fixed format file named auto5.raw.
+\item \textbf{DBMS/Copy, Stat Transfer, sas2stata, and  Stata Users Guide.}: Other methods
+\end{compactitem}
+
+\subsection{Using dates in Stata}
+
+This module will show how to use date variables, date functions, and date display formats in Stata.
+
+\subsubsection{Converting dates from raw data using the \lstinline{date()} function}
+
+The trick to inputting dates in Stata is to forget they are dates, and treat them as character strings, and then later convert them into a Stata date variable. You might have the following date data in your raw data file.
+
+\begin{lstlisting}
+type dates1.raw
+John  1 Jan 1960
+Mary 11 Jul 1955
+Kate 12 Nov 1962
+Mark  8 Jun 1959
+\end{lstlisting}
+
+You can read these data by typing:
+
+\begin{lstlisting}
+infix str name 1-4 str bday 6-17 using dates1.raw
+ (4 observations read)
+\end{lstlisting}
+
+Using the \lstinline{list} command, you can see that the date information has been read correctly into \textit{bday}.
+
+\begin{lstlisting}
+list
+          name          bday
+  1.      John    1 Jan 1960
+  2.      Mary   11 Jul 1955
+  3.      Kate   12 Nov 1962
+  4.      Mark    8 Jun 1959
+\end{lstlisting}
+
+Since \textit{bday} is a string variable, you cannot do any kind of date computations with it until you make a date variable from it. You can generate a date version of \textit{bday} using the \lstinline{date()} function. The example below creates a date variable called \textit{birthday} from the character variable \textit{bday}. The syntax is slightly different depending on which version of Stata you are using. The difference is in how the pattern is specified. In Stata 9 it should be lower case (e.g., ``dmy'') and in Stata 10, it should be upper case for day, month, and year (e.g.,``DMY'') but lower case if you want to specify hours, minutes or seconds (e.g.,``DMYhms''). Our data are in the order day, month, year, so we ``useDMY'' (``ordmy'' if you are using Stata 9) within the \lstinline{date()} command. (Unless otherwise noted, all other Stata commands on this page are the same for versions 9 and 10.)
+
+In Stata \textbf{version 9}:
+
+\begin{lstlisting}
+generate birthday=date(bday,"dmy")
+\end{lstlisting}
+
+In Stata \textbf{version 10}:
+
+\begin{lstlisting}
+generate birthday=date(bday,"DMY")
+\end{lstlisting}
+
+Let's have a look at both bday and birthday.
+
+\begin{lstlisting}
+ list
+          name          bday   birthday
+  1.      John    1 Jan 1960          0
+  2.      Mary   11 Jul 1955      -1635
+  3.      Kate   12 Nov 1962       1046
+  4.      Mark    8 Jun 1959       -207
+ \end{lstlisting}
+
+The values for \textit{birthday} may seem confusing. The value of \textit{birthday} for John is 0 and the value of \textit{birthday} for Mark is -207. Dates are actually stored as \textbf{the number of days from Jan 1, 1960} which is convenient for the computer storing and performing date computations, but is difficult for you and I to read.
+
+We can tell Stata that \textit{birthday} should be displayed using the \%d format to make it easier for humans to read.
+
+\begin{lstlisting}
+ format birthday %d
+list
+          name          bday   birthday
+  1.      John    1 Jan 1960  01jan1960
+  2.      Mary   11 Jul 1955  11jul1955
+  3.      Kate   12 Nov 1962  12nov1962
+  4.      Mark    8 Jun 1959  08jun1959
+ \end{lstlisting}
+
+The \lstinline{date()} function is very flexible and can handle dates written in almost any manner. For example, consider the file \lstinline{dates2.raw}.
+
+\begin{lstlisting}
+type dates2.raw
+John Jan 1 1960
+Mary 07/11/1955
+Kate 11.12.1962
+Mark Jun/8 1959
+\end{lstlisting}
+
+These dates are messy, but they are consistent. Even though the formats look different, it is always a month day year separated by a delimiter (e.g., space slash dot or dash). We can try using the syntax from above to read in our new dates. Note that, as discussed above, for Stata version 10 the order of the date is declared in upper case letters (i.e., ``MDY'') while for version 9 it is declared in all lower case (i.e., ``mdy'').
+
+\begin{lstlisting}
+clear
+infix str name 1-4 str bday 6-17 using dates2.raw
+
+ (4 observations read)
+
+generate birthday=date(bday,"MDY")
+
+format birthday %d
+list
+          name          bday   birthday
+  1.      John    Jan 1 1960  01jan1960
+  2.      Mary    07/11/1955  11jul1955
+  3.      Kate    11.12.1962  12nov1962
+  4.      Mark    Jun/8 1959  08jun1959
+ \end{lstlisting}
+
+Stata was able to read those dates without a problem. Let's try an even tougher set of dates. For example, consider the dates in \lstinline{dates3.raw}.
+
+\begin{lstlisting}
+type dates3.raw
+4-12-1990
+4.12.1990
+Apr 12, 1990
+Apr12,1990
+April 12, 1990
+4/12.1990
+Apr121990
+\end{lstlisting}
+
+Let's try reading these dates and see how Stata handles them. Again, remember that for Stata version 10 dates are declared ``MDY'' while for version 9 they are declared ``mdy''.
+
+\begin{lstlisting}
+clear
+infix str bday 1-20 using dates3.raw
+ (7 observations read)
+generate birthday=date(bday,"MDY")
+ (1 missing value generated)
+format birthday %d
+list
+                     bday   birthday
+  1.            4-12-1990  12apr1990
+  2.            4.12.1990  12apr1990
+  3.         Apr 12, 1990  12apr1990
+  4.           Apr12,1990  12apr1990
+  5.       April 12, 1990  12apr1990
+  6.            4/12.1990  12apr1990
+  7.            Apr121990          .
+\end{lstlisting}
+
+As you can see, Stata was able to handle almost all of those crazy date formats. It was able to handle Apr12,1990 even though there was not a delimiter between the month and day (Stata was able to figure it out since the month was character and the day was a number). The only date that did not work was Apr121990 and that is because there was no delimiter between the day and year. As you can see, the \lstinline{date()} function can handle just about any date as long as there are delimiters separating the month day and year. In certain cases Stata can read all numeric dates entered without delimiters, see \lstinline{help dates} for more information.
+
+\subsubsection{Converting dates from raw data using the \lstinline{mdy()} function}
+
+In some cases, you may have the month, day, and year stored as numeric variables in a dataset. For example, you may have the following data for birth dates from \lstinline{dates4.raw}.
+
+\begin{lstlisting}
+type dates4.raw
+ 7 11 1948
+ 1  1 1960
+10 15 1970
+12 10 1971
+\end{lstlisting}
+
+You can read in this data using the following syntax to create a separate variable for month, day and year.
+
+\begin{lstlisting}
+ clear
+infix month 1-2 day 4-5 year 7-10 using dates4.raw
+ (4 observations read)
+list
+         month        day       year
+  1.         7         11       1948
+  2.         1          1       1960
+  3.        10         15       1970
+  4.        12         10       1971
+ \end{lstlisting}
+
+A Stata date variable can be created using the \lstinline{mdy()} function as shown below.
+
+\begin{lstlisting}
+generate birthday=mdy(month,day,year)
+\end{lstlisting}
+
+Let's format \textit{birthday} using the \lstinline{%d} format so it displays better.
+
+\begin{lstlisting}
+format birthday %d
+list
+         month        day       year   birthday
+  1.         7         11       1948  11jul1948
+  2.         1          1       1960  01jan1960
+  3.        10         15       1970  15oct1970
+  4.        12         10       1971  10dec1971
+\end{lstlisting}
+
+Consider the data in \lstinline{dates5.raw}, which is the same as \lstinline{dates4.raw} except that only two digits are used to signify the year.
+
+\begin{lstlisting}
+type dates5.raw
+ 7 11 48
+ 1  1 60
+10 15 70
+12 10 71
+\end{lstlisting}
+
+Let's try reading these dates just like we read \lstinline{dates4.raw}.
+
+\begin{lstlisting}
+clear
+infix month 1-2 day 4-5 year 7-10 using dates5.raw
+ (4 observations read)
+generate birthday=mdy(month,day,year)
+ (4 missing values generated)
+format birthday %d
+list
+         month        day       year   birthday
+  1.         7         11         48          .
+  2.         1          1         60          .
+  3.        10         15         70          .
+  4.        12         10         71          .
+\end{lstlisting}
+
+As you can see, the values for \textit{birthday} are all missing. This is because Stata assumes that the years were literally 48, 60, 70 and 71 (it does not assume they are 1948, 1960, 1970 and 1971). You can force Stata to assume the century portion is 1900 by adding 1900 to the year as shown below (note that we use \lstinline{replace} instead of generate since the variable \textit{birthday} already exists).
+
+\begin{lstlisting}
+replace birthday=mdy(month,day,year+1900)
+ (4 real changes made)
+format birthday %d
+list
+         month        day       year   birthday
+  1.         7         11         48  11jul1948
+  2.         1          1         60  01jan1960
+  3.        10         15         70  15oct1970
+  4.        12         10         71  10dec1971
+\end{lstlisting}
+
+\subsubsection{Computations with elapsed dates}
+
+Date variables make computations involving dates very convenient. For example, to calculate everyone's age on January 1, 2000 simply use the following conversion.
+
+\begin{lstlisting}
+generate age2000=( mdy(1,1,2000) - birthday ) / 365.25
+list
+         month        day       year   birthday    age2000
+  1.         7         11         48  11jul1948   51.47433
+  2.         1          1         60  01jan1960         40
+  3.        10         15         70  15oct1970   29.21287
+  4.        12         10         71  10dec1971   28.06023
+\end{lstlisting}
+
+Please note that this formula for age does not work well over very short time spans. For example, the age for a child on their his birthday will be less than one due to using 365.25. There are formulas that are more exact but also much more complex. Here is an example courtesy of Dan Blanchette.
+
+\begin{lstlisting}
+generate altage = floor(([ym(2000, 1) - ym(year(birthday), month(birthday))] - [1 < day(birthday)]) / 12)
+\end{lstlisting}
+
+\subsubsection{Other date functions}
+
+Given a date variable, one can have the month, day and year returned separately if desired, using the \lstinline{month()}, \lstinline{day()} and \lstinline{year()} functions, respectively.
+
+\begin{lstlisting}
+generate m=month(birthday)
+generate d=day(birthday)
+generate y=year(birthday)
+list m d y birthday
+             m          d          y   birthday
+  1.         7         11       1948  11jul1948
+  2.         1          1       1960  01jan1960
+  3.        10         15       1970  15oct1970
+  4.        12         10       1971  10dec1971
+\end{lstlisting}
+
+If you'd like to return the \lstinline{day of the week} for a date variable, use the \lstinline{dow()} function (where 0=Sunday, 1=Monday etc.).
+
+\begin{lstlisting}
+gen week_d=dow(birthday)
+list birthday week_d
+      birthday     week_d
+  1. 11jul1948          0
+  2. 01jan1960          5
+  3. 15oct1970          4
+  4. 10dec1971          5
+\end{lstlisting}
+
+\subsubsection{Summary}
+
+The \lstinline{date()} function converts strings containing dates to date variables. The syntax varies slightly by version.
+\begin{compactitem}
+\item In Stata version 9:
+\begin{lstlisting}
+gen date2 = date(date, "dmy")
+\end{lstlisting}
+\item In Stata version 10:
+\begin{lstlisting}
+gen date2 = date(date, "DMY")
+\end{lstlisting}
+\item The mdy() function takes three numeric arguments (month, day, year) and converts them to a date variable.
+\begin{lstlisting}
+generate birthday=mdy(month,day,year)
+\end{lstlisting}
+\item You can display elapsed times as actual dates with display formats such as the \%d format.
+\begin{lstlisting}
+format birthday %d
+\end{lstlisting}
+\end{compactitem}
+
+Other date functions include the \lstinline{month()}, \lstinline{day()}, \lstinline{year()}, and \lstinline{dow()} functions. For online help with dates, type \lstinline{help dates} at the command line. For more detailed explanations about how Stata handles dates and date functions, please refer to the Stata Users Guide.

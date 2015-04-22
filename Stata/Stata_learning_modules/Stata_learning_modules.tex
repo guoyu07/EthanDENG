@@ -4,6 +4,8 @@
 \usepackage{listings}
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{paralist}
+\usepackage{multicol}
+
 % langugae defination
 \lstdefinelanguage{Stata}{
     % Left for users to add missing commands,
@@ -13,12 +15,12 @@
     morekeywords=[2]{cntrade, chinafin, wbopendata, spmap},
     % System commands
     morekeywords=[3]{regress, summarize,sum,
-                     display,log,tabstat,histogram,stem,graph,kdensity,box,rnormal, runiform,mean,sd,p5,p10,p15,p20,p25,p30,p35,p40,p45,p50,p55,p60,p65,p70,p75,p80,p85,p90,p95,p100,n,insheet,infile,infix,input,import,describe,compress,save,use,sysuse,count,list,memory,str10,str8,excel,end,view,matrix,pwcorr,correlate,tab,display,lookfor,labelbook,codebook,sort,tabulate,table,label,order,encode,rename,notes,generate,gen,egen,recode,std,tab1,scatter,rowmean,colmean,keep,drop,append,merge,ttest,anova,margins,marginsplot,predict,pnorm,qnorm,rvfplot,test,logit,tobit,signtest,signrank,ranksum,kwallis,logistic,testparm,inspect,dta_contents,!missing,inrange,missing,oneway,anova,rowmiss,rownonmiss,tabulation,corr,reg,rowtotal},
+                     display,log,tabstat,histogram,stem,graph,kdensity,box,rnormal, runiform,mean,sd,p5,p10,p15,p20,p25,p30,p35,p40,p45,p50,p55,p60,p65,p70,p75,p80,p85,p90,p95,p100,n,insheet,infile,infix,input,import,describe,compress,save,use,sysuse,count,list,memory,str10,str8,excel,end,view,matrix,pwcorr,correlate,tab,display,lookfor,labelbook,codebook,tabulate,table,label,order,encode,rename,notes,generate,gen,egen,recode,std,tab1,scatter,rowmean,colmean,keep,drop,append,merge,ttest,anova,margins,marginsplot,predict,pnorm,qnorm,rvfplot,test,logit,tobit,signtest,signrank,ranksum,kwallis,logistic,testparm,inspect,dta_contents,!missing,inrange,missing,oneway,anova,rowmiss,rownonmiss,tabulation,corr,reg,rowtotal,hist,histogram,lfit,lfitci,dot,line,scatteri,area,spike,connected,bar,dropline,dot,rarea,rbar,rspike,rcap,rcapsym,rscatter,rline,rconnected,mband,mspline,lowess,lfit,qfit,fpfit,lfitci,qfitci,fpfitci,normalden,sort,lvr2plot,type,edit,date,format,mdy,floor,ym,month,day,year,dow,collapse,reshape},
     % Programming Key
-    morekeywords=[4]{forvalues, if, foreach, set, using, in, cd, dir, ls,variable,define,values,data,pwd,close,help,c},
+    morekeywords=[4]{forvalues, if, foreach, set, using, in, cd, dir, ls,variable,define,values,data,pwd,close,help,c,function,combine,str,str8,str13,r,file,saved,read,generated,min,max,made,deleted,of,i,j},
     % Options Key
     morekeywords=[5]{by,over,stat,
-                     text,replace,force,detail,normal,lines,width,jitter,start,clear,sheet,firstrow,half,row,column,col,normal,obs,noobs,nolabel,or,coef,all,expected,unequal,asbalanced,robust,clear,plot,nofreq,chi2,exact,m,missing,listwise,pairwise},
+                     text,replace,force,detail,normal,lines,width,jitter,start,clear,sheet,firstrow,half,row,column,col,normal,obs,noobs,nolabel,or,coef,all,expected,unequal,asbalanced,robust,clear,plot,nofreq,chi2,exact,m,missing,listwise,pairwise,discrete,noout,plabel,mlabel,mlabangle,msymbol,twoway,range,scheme,mcolor,msize,mfcolor,mlcolor,mlabposition, mlabsize,mlabcolor,mlwidth,mlabgap,mlabv,connect,clwidth, clcolor,clpattern,cmissing,cols,legend,lab,name,hole,title,subtitle,ytitle,xtitle,size,xsize,ysize,scale,position,ring,bcolor,fcolor,ifcolor,lwidth,ilwidth,color,lcolor,ilcolor,blcolor,bmargin,linegap,note,caption,graphregion,plotregion,clean,wide,long,string,Long,Wide},
     morecomment=[l]{//},
     % morecomment=[l]{*},  % `*` maybe used as multiply operator. So use `//` as line comment.
     morecomment=[s]{/*}{*/},
@@ -87,6 +89,7 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\graphicspath{{./graph/}}
 \usepackage{geometry}
 \geometry{
             a4paper,
@@ -137,8 +140,15 @@
 \begin{document}
 \maketitle
 \input{mod1}
+\newpage
 \input{mod2}
-
-
+\newpage
+\input{mod3}
+\newpage
+\input{mod4}
+\newpage
+\input{mod5}
+\newpage
+\input{mod6}
 \end{document}
 

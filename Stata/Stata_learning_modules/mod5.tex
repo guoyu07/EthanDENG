@@ -1,0 +1,994 @@
+\section{Basic Data Management in Stata}
+\subsection{Labeling data}
+This module will show how to create labels for your data.  Stata allows you to label your data file (\textbf{data label}), to label the variables within your data file (variable labels), and to label the values for your variables (\textbf{value labels}).  Let's use a file called autolab that does not have any labels.
+
+\begin{lstlisting}
+use "http://www.ats.ucla.edu/stat/stata/modules/autolab.dta", clear
+\end{lstlisting}
+
+Let's use the \lstinline{describe} command to verify that indeed this file does not have any labels.
+
+\begin{lstlisting}
+describe
+Contains data from autolab.dta
+ obs:            74                          1978 Automobile Data
+ vars:            12                          23 Oct 2008 13:36
+ size:         3,478 (99.9% of memory free)   (_dta has notes)
+-------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-------------------------------------------------------------------------------
+make            str18  %-18s
+price           int    %8.0gc
+mpg             int    %8.0g
+rep78           int    %8.0g
+headroom        float  %6.1f
+trunk           int    %8.0g
+weight          int    %8.0gc
+length          int    %8.0g
+turn            int    %8.0g
+displacement    int    %8.0g
+gear_ratio      float  %6.2f
+foreign         byte   %8.0g
+-------------------------------------------------------------------------------
+Sorted by:
+\end{lstlisting}
+
+Let's use the \lstinline{label data} command to add a label describing the data file.  This label can be up to 80 characters long.
+
+\begin{lstlisting}
+label data "This file contains auto data for the year 1978"
+\end{lstlisting}
+
+The \lstinline{describe} command shows that this label has been applied to the version that is currently in memory.
+
+\begin{lstlisting}
+describe
+Contains data from autolab.dta
+ obs:            74                          This file contains auto data for the year 1978
+ vars:            12                          23 Oct 2008 13:36
+ size:         3,478 (99.9% of memory free)   (_dta has notes)
+-------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-------------------------------------------------------------------------------
+make            str18  %-18s
+price           int    %8.0gc
+mpg             int    %8.0g
+rep78           int    %8.0g
+headroom        float  %6.1f
+trunk           int    %8.0g
+weight          int    %8.0gc
+length          int    %8.0g
+turn            int    %8.0g
+displacement    int    %8.0g
+gear_ratio      float  %6.2f
+foreign         byte   %8.0g
+-------------------------------------------------------------------------------
+Sorted by:
+\end{lstlisting}
+
+Let's use the \lstinline{label variable} command to assign labels to the variables \textit{rep78} \textit{price}, \textit{mpg} and \textit{foreign}.
+
+\begin{lstlisting}
+label variable rep78   "the repair record from 1978"
+label variable price   "the price of the car in 1978"
+label variable mpg     "the miles per gallon for the car"
+label variable foreign "the origin of the car, foreign or domestic"
+\end{lstlisting}
+
+The \lstinline{describe} command shows these labels have been applied to the variables.
+
+\begin{lstlisting}
+describe
+Contains data from autolab.dta
+ obs:            74                          This file contains auto data for the year 1978
+ vars:            12                          23 Oct 2008 13:36
+ size:         3,478 (99.9% of memory free)   (_dta has notes)
+-------------------------------------------------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-------------------------------------------------------------------------------------------------------------------------
+make            str18  %-18s
+price           int    %8.0gc                 the price of the car in 1978
+mpg             int    %8.0g                  the miles per gallon for the car
+rep78           int    %8.0g                  the repair record from 1978
+headroom        float  %6.1f
+trunk           int    %8.0g
+weight          int    %8.0gc
+length          int    %8.0g
+turn            int    %8.0g
+displacement    int    %8.0g
+gear_ratio      float  %6.2f
+foreign         byte   %8.0g                  the origin of the car, foreign or domestic
+-------------------------------------------------------------------------------
+Sorted by:
+\end{lstlisting}
+
+Let's make a value label called \textit{foreignl} to label the values of the variable \textit{foreign}. This is a two step process where you first define the label, and then you assign the label to the variable.  The \lstinline{label define} command below creates the value label called \textit{foreignl} that associates 0 with domestic car and 1 with foreign car.
+
+\begin{lstlisting}
+label define foreignl 0 "domestic car" 1 "foreign car"
+\end{lstlisting}
+
+The \lstinline{label values} command below associates the variable \textit{foreign} with the label \textit{foreignl}.
+
+\begin{lstlisting}
+label values foreign foreignl
+\end{lstlisting}
+
+If we use the describe command, we can see that the variable \textit{foreign} has a value label called \textit{foreignl} assigned to it.
+
+\begin{lstlisting}
+describe
+Contains data from autolab.dta
+ obs:            74                          This file contains auto data for the year 1978
+ vars:            12                          23 Oct 2008 13:36
+ size:         3,478 (99.9% of memory free)   (_dta has notes)
+-------------------------------------------------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-------------------------------------------------------------------------------------------------------------------------
+make            str18  %-18s
+price           int    %8.0gc                 the price of the car in 1978
+mpg             int    %8.0g                  the miles per gallon for the car
+rep78           int    %8.0g                  the repair record from 1978
+headroom        float  %6.1f
+trunk           int    %8.0g
+weight          int    %8.0gc
+length          int    %8.0g
+turn            int    %8.0g
+displacement    int    %8.0g
+gear_ratio      float  %6.2f
+foreign         byte   %12.0g      foreignl   the origin of the car, foreign or domestic
+-------------------------------------------------------------------------------
+Sorted by:
+\end{lstlisting}
+
+Now when we use the \lstinline{tabulate foreign} command, it shows the labels domestic car and foreign car instead of just 0 and 1.
+
+\begin{lstlisting}
+table foreign
+-------------+-----------
+the origin   |
+of the car,  |
+foreign or   |
+domestic     |      Freq.
+-------------+-----------
+domestic car |         52
+ foreign car |         22
+-------------+-----------
+\end{lstlisting}
+
+Value labels are used in other commands as well. For example, below we issue the \lstinline{ttest , by(foreign)} command, and the output labels the groups as domestic and foreign (instead of 0 and 1).
+
+\begin{lstlisting}
+ttest mpg , by(foreign)
+Two-sample t test with equal variances
+
+------------------------------------------------------------------------------
+   Group |     Obs        Mean    Std. Err.   Std. Dev.   [95% Conf. Interval]
+---------+--------------------------------------------------------------------
+domestic |      52    19.82692     .657777    4.743297    18.50638    21.14747
+ foreign |      22    24.77273     1.40951    6.611187    21.84149    27.70396
+---------+--------------------------------------------------------------------
+combined |      74     21.2973    .6725511    5.785503     19.9569    22.63769
+---------+--------------------------------------------------------------------
+    diff |           -4.945804    1.362162               -7.661225   -2.230384
+------------------------------------------------------------------------------
+Degrees of freedom: 72
+
+                Ho: mean(domestic) - mean(foreign) = diff = 0
+
+     Ha: diff <0 Ha: diff ~="0" Ha: diff> 0
+       t =  -3.6308                t =  -3.6308              t =  -3.6308
+   P < t =   0.0003          P > |t| =   0.0005          P > t =   0.9997
+\end{lstlisting}
+
+One very important note:  These labels are assigned to the data that is currently in memory.  To make these changes permanent, you need to \lstinline{save} the data.  When you \lstinline{save} the data, all of the labels (data labels, variable labels, value labels) will be saved with the data file.
+
+\subsubsection{Summary}
+\begin{compactitem}
+\item Assign a label to the data file currently in memory.
+\begin{lstlisting}
+label data "1978 auto  data"
+\end{lstlisting}
+\item Assign a label to the variable foreign.
+\begin{lstlisting}
+label variable foreign "the origin  of the car, foreign or domestic"
+\end{lstlisting}
+\item Create the value label foreignl and assign it to the variable foreign.
+\begin{lstlisting}
+label define foreignl 0 "domestic  car"  1 "foreign  car"
+label values foreign foreignl
+\end{lstlisting}
+\end{compactitem}
+
+\subsection{Creating and recoding variables}
+
+This module shows how to create and recode variables. In Stata you can create new variables with \lstinline{generate} and you can modify the values of an existing variable with \lstinline{replace} and with \lstinline{recode}.
+
+\subsubsection{Computing new variables using generate and replace}
+
+Let's \lstinline{use} the \lstinline{auto} data for our examples. In this section we will see how to compute variables with \lstinline{generate} and \lstinline{replace}.
+
+\begin{lstlisting}
+use auto
+\end{lstlisting}
+
+The variable \textit{length} contains the length of the car in inches. Below we see summary statistics for \textit{length}.
+
+\begin{lstlisting}
+summarize length
+Variable |     Obs        Mean   Std. Dev.       Min        Max
+---------+-----------------------------------------------------
+  length |      74    187.9324   22.26634        142        233
+\end{lstlisting}
+
+Let's use the \lstinline{generate} command to make a new variable that has the length in feet instead of inches, called \lstinline{len_ft}.
+
+\begin{lstlisting}
+generate len_ft = length / 12
+\end{lstlisting}
+
+We should emphasize that \lstinline{generate} is for creating a new variable. For an existing variable, you need to use the \lstinline{replace} command (not \lstinline{generate}). As shown below, we use \lstinline{replace} to repeat the assignment to \lstinline{len_ft}.
+
+\begin{lstlisting}
+replace len_ft = length / 12
+
+ (49 real changes made)
+
+
+summarize length len_ft
+
+Variable |     Obs        Mean   Std. Dev.       Min        Max
+---------+-----------------------------------------------------
+  length |      74    187.9324   22.26634        142        233
+  len_ft |      74    15.66104   1.855528   11.83333   19.41667
+\end{lstlisting}
+
+The syntax of \lstinline{generate} and \lstinline{replace} are identical, except:
+\begin{compactitem}
+\item \lstinline{generate} works when the variable does not yet exist and will give an error if the variable already exists.
+\item \lstinline{replace} works when the variable already exists, and will give an error if the variable does not yet exist.
+\end{compactitem}
+
+Suppose we wanted to make a variable called \textit{length2} which has \textit{length} squared.
+
+\begin{lstlisting}
+generate length2 = length^2
+
+summarize length2
+
+Variable |     Obs        Mean   Std. Dev.       Min        Max
+---------+-----------------------------------------------------
+ length2 |      74    35807.69   8364.045      20164      54289
+\end{lstlisting}
+
+Or we might want to make \textit{loglen} which is the natural log of \textit{length}.
+
+\begin{lstlisting}
+generate loglen = log(length)
+
+summarize loglen
+
+Variable |     Obs        Mean   Std. Dev.       Min        Max
+---------+-----------------------------------------------------
+  loglen |      74    5.229035   .1201383   4.955827   5.451038
+\end{lstlisting}
+
+Let's get the mean and standard deviation of \lstinline{length} and we can make Z-scores of \lstinline{length}.
+
+\begin{lstlisting}
+summarize length
+
+Variable |     Obs        Mean   Std. Dev.       Min        Max
+---------+-----------------------------------------------------
+  length |      74    187.9324   22.26634        142        233
+\end{lstlisting}
+
+The mean is 187.93 and the standard deviation is 22.27, so \lstinline{zlength} can be computed as shown below.
+
+generate zlength = (length - 187.93) / 22.27
+
+\begin{lstlisting}
+summarize zlength
+
+Variable |     Obs        Mean   Std. Dev.       Min        Max
+---------+-----------------------------------------------------
+ zlength |      74    .0001092   .9998357  -2.062416   2.023799
+\end{lstlisting}
+
+With \lstinline{generate} and \lstinline{replace}, you can use
+\begin{compactitem}
+\item \lstinline{+ -} for addition and subtraction
+\item \lstinline{* /} for multiplication and division
+\item \lstinline{^} for exponents (e.g., \lstinline{length^2})
+\item \lstinline{( )} for controlling order of operations.
+\end{compactitem}
+
+\subsubsection{Recoding new variables using generate and replace}
+
+Suppose that we wanted to break \textit{mpg} down into three categories. Let's look at a table of \textit{mpg} to see where we might draw the lines for such categories.
+
+\begin{lstlisting}
+tabulate mpg
+
+        mpg |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         12 |          2        2.70        2.70
+         14 |          6        8.11       10.81
+         15 |          2        2.70       13.51
+         16 |          4        5.41       18.92
+         17 |          4        5.41       24.32
+         18 |          9       12.16       36.49
+         19 |          8       10.81       47.30
+         20 |          3        4.05       51.35
+         21 |          5        6.76       58.11
+         22 |          5        6.76       64.86
+         23 |          3        4.05       68.92
+         24 |          4        5.41       74.32
+         25 |          5        6.76       81.08
+         26 |          3        4.05       85.14
+         28 |          3        4.05       89.19
+         29 |          1        1.35       90.54
+         30 |          2        2.70       93.24
+         31 |          1        1.35       94.59
+         34 |          1        1.35       95.95
+         35 |          2        2.70       98.65
+         41 |          1        1.35      100.00
+------------+-----------------------------------
+      Total |         74      100.00
+\end{lstlisting}
+
+Let's convert \textit{mpg} into three categories to help make this more readable. Here we convert \textit{mpg} into three categories using \lstinline{generate} and \lstinline{replace}.
+
+\begin{lstlisting}
+generate mpg3    = .
+ (74 missing values generated)
+
+replace  mpg3    = 1 if (mpg <= 18)
+ (27 real changes made)
+
+replace  mpg3    = 2 if (mpg >= 19) & (mpg <=23)
+ (24 real changes made)
+
+replace  mpg3    = 3 if (mpg >= 24) & (mpg <.)
+ (23 real changes made)
+\end{lstlisting}
+
+Let's use \lstinline{tabulate} to check that this worked correctly. Indeed, you can see that a value of 1 for \textit{mpg3} goes from 12-18, a value of 2 goes from 19-23, and a value of 3 goes from 24-41.
+
+\begin{lstlisting}
+tabulate mpg mpg3
+
+           |               mpg3
+       mpg |         1          2          3 |     Total
+-----------+---------------------------------+----------
+        12 |         2          0          0 |         2
+        14 |         6          0          0 |         6
+        15 |         2          0          0 |         2
+        16 |         4          0          0 |         4
+        17 |         4          0          0 |         4
+        18 |         9          0          0 |         9
+        19 |         0          8          0 |         8
+        20 |         0          3          0 |         3
+        21 |         0          5          0 |         5
+        22 |         0          5          0 |         5
+        23 |         0          3          0 |         3
+        24 |         0          0          4 |         4
+        25 |         0          0          5 |         5
+        26 |         0          0          3 |         3
+        28 |         0          0          3 |         3
+        29 |         0          0          1 |         1
+        30 |         0          0          2 |         2
+        31 |         0          0          1 |         1
+        34 |         0          0          1 |         1
+        35 |         0          0          2 |         2
+        41 |         0          0          1 |         1
+-----------+---------------------------------+----------
+     Total |        27         24         23 |        74
+\end{lstlisting}
+
+Now, we could use \textit{mpg3} to show a crosstab of \textit{mpg3} by \textit{foreign} to contrast the mileage of the foreign and domestic cars.
+
+\begin{lstlisting}
+tabulate mpg3 foreign, column
+
+           |        foreign
+      mpg3 |         0          1 |     Total
+-----------+----------------------+----------
+         1 |        22          5 |        27
+           |     42.31      22.73 |     36.49
+-----------+----------------------+----------
+         2 |        19          5 |        24
+           |     36.54      22.73 |     32.43
+-----------+----------------------+----------
+         3 |        11         12 |        23
+           |     21.15      54.55 |     31.08
+-----------+----------------------+----------
+     Total |        52         22 |        74
+           |    100.00     100.00 |    100.00
+\end{lstlisting}
+
+The crosstab above shows that 21\% of the domestic cars fall into the \textbf{high mileage} category, while 55\% of the foreign cars fit into this category.
+
+\subsubsection{Recoding variables using recode}
+
+There is an easier way to recode \textit{mpg} to three categories using \lstinline{generate} and \lstinline{recode}. First, we make a copy of \textit{mpg}, calling it \textit{mpg3a}. Then, we use \lstinline{recode} to convert \textit{mpg3a} into three categories: min-18 into 1, 19-23 into 2, and 24-max into 3.
+
+\begin{lstlisting}
+generate mpg3a = mpg
+
+recode   mpg3a (min/18=1) (19/23=2) (24/max=3)
+
+ (74 changes made)
+\end{lstlisting}
+
+Let's double check to see that this worked correctly. We see that it worked perfectly.
+
+\begin{lstlisting}
+tabulate mpg mpg3a
+
+           |              mpg3a
+       mpg |         1          2          3 |     Total
+-----------+---------------------------------+----------
+        12 |         2          0          0 |         2
+        14 |         6          0          0 |         6
+        15 |         2          0          0 |         2
+        16 |         4          0          0 |         4
+        17 |         4          0          0 |         4
+        18 |         9          0          0 |         9
+        19 |         0          8          0 |         8
+        20 |         0          3          0 |         3
+        21 |         0          5          0 |         5
+        22 |         0          5          0 |         5
+        23 |         0          3          0 |         3
+        24 |         0          0          4 |         4
+        25 |         0          0          5 |         5
+        26 |         0          0          3 |         3
+        28 |         0          0          3 |         3
+        29 |         0          0          1 |         1
+        30 |         0          0          2 |         2
+        31 |         0          0          1 |         1
+        34 |         0          0          1 |         1
+        35 |         0          0          2 |         2
+        41 |         0          0          1 |         1
+-----------+---------------------------------+----------
+     Total |        27         24         23 |        74
+\end{lstlisting}
+
+\subsubsection{Recodes with if}
+
+Let's create a variable called \textit{mpgfd} that assesses the mileage of the cars with respect to their origin. Let this be a 0/1 variable called \textit{mpgfd} which is:
+\begin{compactitem}
+\item 0 if below the median mpg for its group (foreign/domestic)
+\item 1 if at/above the median mpg for its group (foreign/domestic).
+\end{compactitem}
+sort foreign
+
+\begin{lstlisting}
+by foreign: summarize mpg, detail
+
+ -> foreign=        0
+                             mpg
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%           12             12
+ 5%           14             12
+10%           14             14       Obs                  52
+25%         16.5             14       Sum of Wgt.          52
+
+50%           19                      Mean           19.82692
+                        Largest       Std. Dev.      4.743297
+75%           22             28
+90%           26             29       Variance       22.49887
+95%           29             30       Skewness       .7712432
+99%           34             34       Kurtosis       3.441459
+
+-> foreign=        1
+                             mpg
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%           14             14
+ 5%           17             17
+10%           17             17       Obs                  22
+25%           21             18       Sum of Wgt.          22
+
+50%         24.5                      Mean           24.77273
+                        Largest       Std. Dev.      6.611187
+75%           28             31
+90%           35             35       Variance       43.70779
+95%           35             35       Skewness        .657329
+99%           41             41       Kurtosis        3.10734
+\end{lstlisting}
+
+We see that the median is 19 for the domestic (foreign==0) cars and 24.5 for the foreign (foreign==1) cars. The \lstinline{generate} and \lstinline{recode} commands below recode \lstinline{mpg} into \lstinline{mpgfd} based on the domestic car median for the domestic cars, and based on the foreign car median for the foreign cars.
+
+\begin{lstlisting}
+generate mpgfd = mpg
+
+recode   mpgfd (min/18=0) (19/max=1) if foreign==0
+
+ (52 changes made)
+
+recode   mpgfd (min/24=0) (25/max=1) if foreign==1
+
+ (22 changes made)
+\end{lstlisting}
+
+We can check using this below, and the recoded value \textit{mpgfd} looks correct.
+
+\begin{lstlisting}
+by foreign: tabulate mpg mpgfd
+
+ -> foreign=        0
+           |         mpgfd
+       mpg |         0          1 |     Total
+-----------+----------------------+----------
+        12 |         2          0 |         2
+        14 |         5          0 |         5
+        15 |         2          0 |         2
+        16 |         4          0 |         4
+        17 |         2          0 |         2
+        18 |         7          0 |         7
+        19 |         0          8 |         8
+        20 |         0          3 |         3
+        21 |         0          3 |         3
+        22 |         0          5 |         5
+        24 |         0          3 |         3
+        25 |         0          1 |         1
+        26 |         0          2 |         2
+        28 |         0          2 |         2
+        29 |         0          1 |         1
+        30 |         0          1 |         1
+        34 |         0          1 |         1
+-----------+----------------------+----------
+     Total |        22         30 |        52
+
+
+-> foreign=        1
+           |         mpgfd
+       mpg |         0          1 |     Total
+-----------+----------------------+----------
+        14 |         1          0 |         1
+        17 |         2          0 |         2
+        18 |         2          0 |         2
+        21 |         2          0 |         2
+        23 |         3          0 |         3
+        24 |         1          0 |         1
+        25 |         0          4 |         4
+        26 |         0          1 |         1
+        28 |         0          1 |         1
+        30 |         0          1 |         1
+        31 |         0          1 |         1
+        35 |         0          2 |         2
+        41 |         0          1 |         1
+-----------+----------------------+----------
+     Total |        11         11 |        22
+\end{lstlisting}
+
+\subsubsection{Summary}
+\begin{compactitem}
+\item Create a new variable \lstinline{len_ft} which is length divided by 12.
+\begin{lstlisting}
+generate len_ft = length / 12
+\end{lstlisting}
+\item Change values of an existing variable named \lstinline{len_ft}.
+\begin{lstlisting}
+replace len_ft = length / 12
+\end{lstlisting}
+\item Recode mpg into mpg3, having three categories using generate and replace if.
+\begin{lstlisting}
+generate mpg3 = .
+replace  mpg3 = 1 if (mpg <=18)
+replace  mpg3 = 2 if (mpg >=19) & (mpg <=23)
+replace  mpg3 = 3 if (mpg >=24) & (mpg <.)
+\end{lstlisting}
+\item Recode mpg into mpg3a, having three categories, 1 2 3, using generate and recode.
+\begin{lstlisting}
+generate mpg3a = mpg
+recode   mpg3a (min/18=1) (19/23=2) (24/max=3)
+\end{lstlisting}
+\item Recode mpg into mpgfd, having two categories, but using different cutoffs for foreign and domestic cars.
+\begin{lstlisting}
+generate mpgfd = mpg
+recode   mpgfd (min/18=0) (19/max=1) if foreign==0
+recode   mpgfd (min/24=0) (25/max=1) if foreign==1
+\end{lstlisting}
+\end{compactitem}
+
+\subsection{Subsetting data}
+
+This module shows how you can subset data in Stata. You can subset data by keeping or dropping variables, and you can subset data by keeping or dropping observations. You can also subset data as you \lstinline{use} a data file if you are trying to read a file that is too big to fit into the memory on your computer.
+
+\subsubsection{Keeping and dropping variables}
+
+Sometimes you do not want all of the variables in a data file. You can use the \lstinline{keep} and \lstinline{drop} commands to subset variables. If we think of your data like a spreadsheet, this section will show how you can remove columns (variables) from your data. Let's illustrate this with the \lstinline{auto} data file.
+
+\begin{lstlisting}
+sysuse auto
+\end{lstlisting}
+
+We can use the \lstinline{describe} command to see its variables.
+
+\begin{lstlisting}
+describe
+
+Contains data from C:\Program Files\Stata10\ado\base/a/auto.dta
+  obs:            74                          1978 Automobile Data
+ vars:            12                          13 Apr 2007 17:45
+ size:         3,478 (99.7% of memory free)   (_dta has notes)
+-------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-------------------------------------------------------------------------------
+make            str18  %-18s                  Make and Model
+price           int    %8.0gc                 Price
+mpg             int    %8.0g                  Mileage (mpg)
+rep78           int    %8.0g                  Repair Record 1978
+headroom        float  %6.1f                  Headroom (in.)
+trunk           int    %8.0g                  Trunk space (cu. ft.)
+weight          int    %8.0gc                 Weight (lbs.)
+length          int    %8.0g                  Length (in.)
+turn            int    %8.0g                  Turn Circle (ft.)
+displacement    int    %8.0g                  Displacement (cu. in.)
+gear_ratio      float  %6.2f                  Gear Ratio
+foreign         byte   %8.0g       origin     Car type
+-------------------------------------------------------------------------------
+Sorted by:  foreign
+\end{lstlisting}
+
+Suppose we want to just have \textit{make} \textit{mpg} and \textit{price}, we can \lstinline{keep} just those variables, as shown below.
+
+\begin{lstlisting}
+keep make mpg price
+\end{lstlisting}
+
+If we issue the \lstinline{describe} command again, we see that indeed those are the only variables left.
+
+\begin{lstlisting}
+describe
+
+Contains data from C:\Program Files\Stata10\ado\base/a/auto.dta
+obs:            74                          1978 Automobile Data
+vars:             3                          13 Apr 2007 17:45
+size:         1,924 (99.8% of memory free)   (_dta has notes)
+-------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-------------------------------------------------------------------------------
+make            str18  %-18s                  Make and Model
+price           int    %8.0gc                 Price
+mpg             int    %8.0g                  Mileage (mpg)
+-------------------------------------------------------------------------------
+Sorted by:
+     Note:  dataset has changed since last saved
+\end{lstlisting}
+
+Remember, this has not changed the file on disk, but only the copy we have in memory. If we saved this file calling it \lstinline{auto}, it would mean that we would replace the existing file (with all the variables) with this file which just has \lstinline{make}, \lstinline{mpg} and \lstinline{price}. In effect, we would permanently lose all of the other variables in the data file. It is important to be careful when using the save command after you have eliminated variables, and it is recommended that you save such files to a file with a new name, e.g., \lstinline{save auto2}. Let's show how to use the \lstinline{drop} command to drop variables. First, let's clear out the data in memory and \lstinline{use} the auto data file.
+
+\begin{lstlisting}
+sysuse auto, clear
+\end{lstlisting}
+
+perhaps we are not interested in the variables \lstinline{displ} and \lstinline{gear_ratio}. We can get rid of them using the \lstinline{drop} command shown below.
+
+\begin{lstlisting}
+drop displ gear_ratio
+\end{lstlisting}
+
+Again, using \lstinline{describe} shows that the variables have been eliminated.
+
+\begin{lstlisting}
+describe
+
+Contains data from C:\Program Files\Stata10\ado\base/a/auto.dta
+obs:            74                          1978 Automobile Data
+vars:            10                          13 Apr 2007 17:45
+size:         3,034 (99.7% of memory free)   (_dta has notes)
+-------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-------------------------------------------------------------------------------
+make            str18  %-18s                  Make and Model
+price           int    %8.0gc                 Price
+mpg             int    %8.0g                  Mileage (mpg)
+rep78           int    %8.0g                  Repair Record 1978
+headroom        float  %6.1f                  Headroom (in.)
+trunk           int    %8.0g                  Trunk space (cu. ft.)
+weight          int    %8.0gc                 Weight (lbs.)
+length          int    %8.0g                  Length (in.)
+turn            int    %8.0g                  Turn Circle (ft.)
+foreign         byte   %8.0g       origin     Car type
+-------------------------------------------------------------------------------
+Sorted by:  foreign
+     Note:  dataset has changed since last save
+\end{lstlisting}
+
+If we wanted to make this change permanent, we could save the file as \lstinline{auto2.dta} as shown below.
+
+\begin{lstlisting}
+save auto2
+
+file auto2.dta saved
+\end{lstlisting}
+
+\subsubsection{Keeping and dropping observations}
+
+The above showed how to use \lstinline{keep} and \lstinline{drop} variables to eliminate variables from your data file. The \lstinline{keep if} and \lstinline{drop if} commands can be used to keep and drop observations. Thinking of your data like a spreadsheet, the \lstinline{keep if} and \lstinline{drop if} commands can be used to eliminate rows of your data. Let's illustrate this with the auto data. Let's use the \lstinline{auto} file and \lstinline{clear} out the data currently in memory.
+
+\begin{lstlisting}
+sysuse auto, clear
+\end{lstlisting}
+
+The variable \textit{rep78} has values 1 to 5, and also has some missing values, as shown below.
+
+\begin{lstlisting}
+tabulate rep78 , missing
+     Repair |
+Record 1978 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          2        2.70        2.70
+          2 |          8       10.81       13.51
+          3 |         30       40.54       54.05
+          4 |         18       24.32       78.38
+          5 |         11       14.86       93.24
+          . |          5        6.76      100.00
+------------+-----------------------------------
+      Total |         74      100.00
+\end{lstlisting}
+
+We may want to eliminate the observations which have missing values using \lstinline{drop if} as shown below. The portion after the \lstinline{drop if} specifies which observations that should be eliminated.
+
+\begin{lstlisting}
+drop if missing(rep78)
+
+ (5 observations deleted)
+\end{lstlisting}
+
+Using the \lstinline{tabulate} command again shows that these observations have been eliminated.
+
+\begin{lstlisting}
+tabulate rep78 , missing
+
+      rep78 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          2        2.90        2.90
+          2 |          8       11.59       14.49
+          3 |         30       43.48       57.97
+          4 |         18       26.09       84.06
+          5 |         11       15.94      100.00
+------------+-----------------------------------
+      Total |         69      100.00
+\end{lstlisting}
+
+We could make this change permanent by using the \lstinline{save} command to save the file. Let's illustrate using \lstinline{keep if} to eliminate observations. First let's clear out the current file and \lstinline{use} the \lstinline{auto} data file.
+
+\begin{lstlisting}
+sysuse auto, clear
+\end{lstlisting}
+
+The \lstinline{keep if} command can be used to eliminate observations, except that the part after the \lstinline{keep if} specifies which observations should be kept. Suppose we want to keep just the cars which had a repair rating of 3 or less. The easiest way to do this would be using the \lstinline{keep if} command, as shown below.
+
+\begin{lstlisting}
+keep if (rep78 <= 3)
+
+ (34 observations deleted)
+\end{lstlisting}
+
+The \lstinline{tabulate} command shows that this was successful.
+
+\begin{lstlisting}
+tabulate rep78, missing
+
+      rep78 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          2        5.00        5.00
+          2 |          8       20.00       25.00
+          3 |         30       75.00      100.00
+------------+-----------------------------------
+      Total |         40      100.00
+\end{lstlisting}
+
+Before we go on to the next section, let's clear out the data that is currently in memory.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+\subsubsection{Selecting variables and observations with \lstinline{use}}
+
+The above sections showed how to use \lstinline{keep}, \lstinline{drop}, \lstinline{keep if}, and \lstinline{drop if} for eliminating variables and observations. Sometimes, you may want to use a data file which is bigger than you can fit into memory and you would wish to eliminate variables and/or observations as you use the file. This is illustrated below with the \lstinline{auto} data file. Selecting variables. You can specify just the variables you wish to bring in on the \lstinline{use} command. For example, let's \lstinline{use} the \lstinline{auto} data file with just \textit{make} \textit{price} and \textit{mpg}.
+
+\begin{lstlisting}
+use make price mpg using "http://www.stata-press.com/data/r10/auto.dta"
+\end{lstlisting}
+
+The \lstinline{describe} command shows us that this worked.
+
+\begin{lstlisting}
+describe
+
+Contains data from http://www.stata-press.com/data/r10/auto.dta
+ obs:            74                          1978 Automobile Data
+vars:             3                          13 Apr 2007 17:45
+size:         1,924 (99.8% of memory free)   (_dta has notes)
+-------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-------------------------------------------------------------------------------
+make            str18  %-18s                  Make and Model
+price           int    %8.0gc                 Price
+mpg             int    %8.0g                  Mileage (mpg)
+-------------------------------------------------------------------------------
+Sorted by:
+\end{lstlisting}
+
+Let's clear out the data before the next example.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+Suppose we want to just bring in the observations where \textit{rep78} is 3 or less. We can do this as shown below.
+
+\begin{lstlisting}
+use "http://www.stata-press.com/data/r10/auto.dta" if (rep78 <= 3)
+\end{lstlisting}
+
+We can use \lstinline{tabulate} to double check that this worked.
+
+\begin{lstlisting}
+tabulate rep78, missing
+
+      rep78 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          2        5.00        5.00
+          2 |          8       20.00       25.00
+          3 |         30       75.00      100.00
+------------+-----------------------------------
+      Total |         40      100.00
+\end{lstlisting}
+
+Let's clear out the data before the next example.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+Let's show another example. Lets read in just the cars that had a rating of 4 or higher.
+
+\begin{lstlisting}
+use "http://www.stata-press.com/data/r10/auto.dta" if (rep78 >= 4) & (rep78 <.)
+\end{lstlisting}
+
+Let's check this using the \lstinline{tabulate} command.
+
+\begin{lstlisting}
+tabulate rep78, missing
+
+      rep78 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          4 |         18       62.07       62.07
+          5 |         11       37.93      100.00
+------------+-----------------------------------
+      Total |         29      100.00
+\end{lstlisting}
+
+Let's clear out the data before the next example.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+You can both eliminate variables and observations with the \lstinline{use}command. Let's read in just \lstinline{make} \lstinline{mpg} \lstinline{price} and \lstinline{rep78} for the cars with a repair record of 3 or lower.
+
+\begin{lstlisting}
+use make mpg price rep78 if (rep78 <= 3) using "http://www.stata-press.com/data/r10/auto.dta"
+\end{lstlisting}
+
+Let's check this using \lstinline{describe} and \lstinline{tabulate}.
+
+\begin{lstlisting}
+describe
+
+Contains data from http://www.stata-press.com/data/r10/auto.dta
+  obs:            40                          1978 Automobile Data
+ vars:             4                          13 Apr 2007 17:45
+ size:         1,120 (99.9% of memory free)   (_dta has notes)
+-------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-------------------------------------------------------------------------------
+make            str18  %-18s                  Make and Model
+price           int    %8.0gc                 Price
+mpg             int    %8.0g                  Mileage (mpg)
+rep78           int    %8.0g                  Repair Record 1978
+-------------------------------------------------------------------------------
+Sorted by:
+
+tabulate rep78
+      rep78 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          2        5.00        5.00
+          2 |          8       20.00       25.00
+          3 |         30       75.00      100.00
+------------+-----------------------------------
+      Total |         40      100.00
+\end{lstlisting}
+
+Let's clear out the data before the next example.
+
+\begin{lstlisting}
+clear
+\end{lstlisting}
+
+Note that the ordering of if and using is arbitrary.
+
+\begin{lstlisting}
+use make mpg price rep78 using "http://www.stata-press.com/data/r10/auto.dta" if (rep78 <= 3)
+\end{lstlisting}
+
+Let's check this using \lstinline{describe} and \lstinline{tabulate}.
+
+\begin{lstlisting}
+describe
+
+Contains data from http://www.stata-press.com/data/r10/auto.dta
+  obs:            40                          1978 Automobile Data
+ vars:             4                          13 Apr 2007 17:45
+ size:         1,120 (99.9% of memory free)   (_dta has notes)
+-------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-------------------------------------------------------------------------------
+make            str18  %-18s                  Make and Model
+price           int    %8.0gc                 Price
+mpg             int    %8.0g                  Mileage (mpg)
+rep78           int    %8.0g                  Repair Record 1978
+-------------------------------------------------------------------------------
+Sorted by:
+
+tabulate rep78
+      rep78 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |          2        5.00        5.00
+          2 |          8       20.00       25.00
+          3 |         30       75.00      100.00
+------------+-----------------------------------
+      Total |         40      100.00
+\end{lstlisting}
+
+Have a look at this command. Do you think it will work?
+
+\begin{lstlisting}
+use make mpg if (rep78 <= 3) using "http://www.stata-press.com/data/r10/auto.dta"
+rep78 not found
+r(111);
+\end{lstlisting}
+
+You see, \textit{rep78} was not one of the variables read in, so it could not be used in the \lstinline{if} portion. To use a variable in the \lstinline{if} portion, it has to be one of the variables that is read in.
+
+\subsubsection{Summary}
+\begin{compactitem}
+\item Using keep/drop to eliminate variables
+\begin{lstlisting}
+keep make price mpg
+
+drop displ gear_ratio
+\end{lstlisting}
+\item Using keep if/drop if to eliminate observations
+\begin{lstlisting}
+drop if missing(rep78)
+
+keep if (rep78 <= 3)
+\end{lstlisting}
+\item Eliminating variables and/or observations with use
+\begin{lstlisting}
+use make mpg price rep78 using auto
+use auto if (rep78 <= 3)
+
+use make mpg price rep78 using auto if (rep78 <= 3)
+\end{lstlisting}
+\end{compactitem}
