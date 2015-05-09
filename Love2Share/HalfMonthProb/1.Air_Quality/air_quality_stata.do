@@ -8,8 +8,7 @@
     Last Modified on:   2015-05-07
     Last Modified by:   Ethan_Deng
 */
-* set the working directory
-cd D:\R\Love2ShareClub
+cd "E:\Sola\Git\Love2Share\HalfMonthProb\1.Air_Quality"
 * import the data from csv
 insheet city date index level pollutant using air_quality_stata.csv,clear
 * index is the Air Quality Index (AQI)
@@ -30,11 +29,11 @@ label variable index2 "Tianjin"
 label variable index3 "Shijiazhuang"
 label variable index4 "Shanghai"
 
-graph twoway line index1-index4 date2,title("The AQI of four cities in China") xtitle("") ytitle("AQI")
-graph export "D:\R\Love2ShareClub\air_quality_stata.pdf", as(pdf) replace
+graph twoway (line index1 date2, lcolor("241 146 62")) (line index2 date2, lcolor("67 154 185")) (line index3 date2, lcolor("155 151 182")) (line index4 date2, lcolor("77 159 109")) ,title("The AQI of four cities in China") xtitle("") ytitle("AQI")
+graph export "E:\Sola\Git\Love2Share\HalfMonthProb\1.Air_Quality\air_quality_stata.pdf", as(pdf) replace
+graph export "E:\Sola\Git\Love2Share\HalfMonthProb\1.Air_Quality\air_quality_stata.png", as(png) width(600) replace
 
 * generate a variable named dm which is the "month of date" (mofd)
-* in order to get the average AQI in each month
 gen dm = mofd(date2)
 format dm %tm
 collapse index1-index4, by(dm) /* get the monthly average AQI */
@@ -45,5 +44,6 @@ label variable index3 "Shijiazhuang"
 label variable index4 "Shanghai"
 label variable dm "Date"
 
-graph twoway line index1-index4 dm,title("The AQI of four cities in China(monthly average)") xtitle("") ytitle("AQI")
-graph export "D:\R\Love2ShareClub\air_quality_stata_month.pdf", as(pdf) replace
+graph twoway (line index1 dm, lcolor("241 146 62")) (line index2 dm, lcolor("67 154 185")) (line index3 dm, lcolor("155 151 182")) (line index4 dm, lcolor("77 159 109")) ,title("The AQI of four cities in China(monthly average)") xtitle("") ytitle("AQI")
+graph export "E:\Sola\Git\Love2Share\HalfMonthProb\1.Air_Quality\air_quality_stata_month.pdf", as(pdf) replace
+graph export "E:\Sola\Git\Love2Share\HalfMonthProb\1.Air_Quality\air_quality_stata_month.png", as(png) width(600) replace

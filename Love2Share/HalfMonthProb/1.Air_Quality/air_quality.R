@@ -4,7 +4,7 @@
 ##   Created by: EthanDeng                            ##
 ##   Created on: 2015-05-06                           ##
 ########################################################
-setwd("D:/R/Love2ShareClub")
+setwd("E:/Sola/Git/Love2Share/HalfMonthProb/1.Air_Quality")
 
 # pkgs needed
 require(dplyr)
@@ -26,7 +26,7 @@ air_quality <- air_quality %>%
 
 # Method: Use ggplot2 to plot and showtext to render the Chinese Character
 # Construct the graph (base layer)
-g <- ggplot(air_quality, aes(x = date, y = index)) + geom_line(aes(colour = factor(city))) + ylab("AQI index") + theme(plot.title = element_text(lineheight=.8, face="bold",vjust=1.3)) + scale_colour_discrete(name="城市名称")
+g <- ggplot(air_quality, aes(x = date, y = index)) + geom_line(aes(colour = factor(city))) + ylab("AQI index") + theme(plot.title = element_text(lineheight=2, face="bold",vjust=1.3, size = rel(1.5))) + scale_colour_discrete(name="城市名称")
 # Add the title and print out the pdf
 g + ggtitle("四个城市的空气污染指数（日变化）")
 ggsave("air_quality.pdf")
