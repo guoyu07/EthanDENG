@@ -25,9 +25,9 @@ drop city level pollutant /* drop the string variables */
 reshape wide index, i(date2) j(city_num)
 
 label variable index1 "Beijing"
-label variable index2 "Tianjin"
+label variable index2 "Shanghai"
 label variable index3 "Shijiazhuang"
-label variable index4 "Shanghai"
+label variable index4 "Tianjin"
 
 graph twoway (line index1 date2, lcolor("241 146 62")) (line index2 date2, lcolor("67 154 185")) (line index3 date2, lcolor("155 151 182")) (line index4 date2, lcolor("77 159 109")) ,title("The AQI of four cities in China") xtitle("") ytitle("AQI")
 graph export "E:\Sola\Git\Love2Share\HalfMonthProb\1.Air_Quality\air_quality_stata.pdf", as(pdf) replace
@@ -39,9 +39,9 @@ format dm %tm
 collapse index1-index4, by(dm) /* get the monthly average AQI */
 
 label variable index1 "Beijing"
-label variable index2 "Tianjin"
+label variable index2 "Shanghai"
 label variable index3 "Shijiazhuang"
-label variable index4 "Shanghai"
+label variable index4 "Tianjin"
 label variable dm "Date"
 
 graph twoway (line index1 dm, lcolor("241 146 62")) (line index2 dm, lcolor("67 154 185")) (line index3 dm, lcolor("155 151 182")) (line index4 dm, lcolor("77 159 109")) ,title("The AQI of four cities in China(monthly average)") xtitle("") ytitle("AQI")
