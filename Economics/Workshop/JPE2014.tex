@@ -11,7 +11,9 @@
   }
 }
 
-
+\setbeamerfont{myTOC}{series=\bfseries}
+\AtBeginSection[]{\frame{\frametitle{Contents}%
+                  \usebeamerfont{myTOC}\tableofcontents[current]}}
 
 \setcounter{tocdepth}{1}
 
@@ -126,10 +128,10 @@ The level of \alert{college enrollment} and the \alert{composition of college st
 \begin{frame}[c]\frametitle{Depatures from ERS}
 
 \begin{enumerate}
-    \item The college market is subject to information frictions and uncertainty: colleges can only observe noisy measures of student ability, and they do not observe student preferences.
-    \item Student application decisions differ substantially.
-    \item This paper models the strategic behavior of both public colleges and private colleges.
-    \item Students have different abilities and preferences for colleges, which are unobservable to researchers.
+    \item The college market is subject to \alert{information frictions} and \alert{uncertainty}: colleges can only observe noisy measures of student ability, and they do not observe student preferences.
+    \item Student application decisions \alert{differ substantially}.
+    \item This paper models the \alert{strategic behavior} of both \textit{public} colleges and \textit{private} colleges.
+    \item Students have \alert{different abilities and preferences} for colleges, which are unobservable to researchers.
 \end{enumerate}
 
 
@@ -138,12 +140,12 @@ The level of \alert{college enrollment} and the \alert{composition of college st
 
 \begin{frame}[c]\frametitle{Building on Work by CLS}
 \begin{itemize}
-    \item Quantifies the significance of the two key elements of CLS: information frictions and application costs.
+    \item Quantifies the significance of the two key elements of CLS: \alert{information frictions} and \alert{application costs}.
     \item Extend CLS to account for some elements that are important
     \begin{itemize}
-        \item students are heterogeneous in preferences and abilities, both of which are unknown to the colleges.
-        \item allow for two noisy measures of student ability (signal + test score).
-        \item  model multiple colleges competing via tuition and admission policies.
+        \item students are \textit{heterogeneous in preferences and abilities}, both of which are unknown to the colleges.
+        \item allow for two \textit{noisy measures of student ability} (signal + test score).
+        \item  model \textit{multiple colleges} competing via tuition and admission policies.
     \end{itemize}
 
 \end{itemize}
@@ -151,7 +153,7 @@ The level of \alert{college enrollment} and the \alert{composition of college st
 \end{frame}
 
 \begin{frame}{Advances}
-This paper makes advances relative to the current literature by simultaneously modeling three aspects of the college market:
+This paper makes \alert{advances} relative to the current literature by simultaneously modeling three aspects of the college market:
 \begin{enumerate}
     \item  Application is \textit{costly} to the student.
     \item  Students differ in their \textit{abilities} and \textit{preferences} for colleges.
