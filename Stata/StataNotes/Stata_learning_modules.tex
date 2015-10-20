@@ -1,0 +1,178 @@
+%!TEX program = xelatex
+\documentclass{article}
+\usepackage{booktabs,longtable}
+\usepackage{listings}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{paralist}
+\usepackage{multicol}
+
+% langugae defination
+\lstdefinelanguage{Stata}{
+    % Left for users to add missing commands,
+    % with possibility of choosing different style.
+    morekeywords={},
+    % Popular add-on commands
+    morekeywords=[2]{cntrade, chinafin, wbopendata, spmap},
+    % System commands
+    morekeywords=[3]{regress, summarize,sum,
+                     display,log,tabstat,histogram,stem,graph,kdensity,box,rnormal, runiform,mean,sd,p5,p10,p15,p20,p25,p30,p35,p40,p45,p50,p55,p60,p65,p70,p75,p80,p85,p90,p95,p100,n,insheet,infile,infix,input,import,describe,compress,save,use,sysuse,count,list,memory,str10,str8,excel,end,view,matrix,pwcorr,correlate,tab,display,lookfor,labelbook,codebook,tabulate,table,label,order,encode,rename,notes,generate,gen,egen,recode,std,tab1,scatter,rowmean,colmean,keep,drop,append,merge,ttest,anova,margins,marginsplot,predict,pnorm,qnorm,rvfplot,test,logit,tobit,signtest,signrank,ranksum,kwallis,logistic,testparm,inspect,dta_contents,!missing,inrange,missing,oneway,anova,rowmiss,rownonmiss,tabulation,corr,reg,rowtotal,hist,histogram,lfit,lfitci,dot,line,scatteri,area,spike,connected,bar,dropline,dot,rarea,rbar,rspike,rcap,rcapsym,rscatter,rline,rconnected,mband,mspline,lowess,lfit,qfit,fpfit,lfitci,qfitci,fpfitci,normalden,sort,lvr2plot,type,edit,date,format,mdy,floor,ym,month,day,year,dow,collapse,reshape,seperate},
+    % Programming Key
+    morekeywords=[4]{forvalues, if, foreach, set, using, in, cd, dir, ls,variable,define,values,data,pwd,close,help,c,function,combine,str,str8,str13,r,file,saved,read,generated,min,max,made,deleted,of,i,j},
+    % Options Key
+    morekeywords=[5]{by,over,stat,
+                     text,replace,force,detail,normal,lines,width,jitter,start,clear,sheet,firstrow,half,row,column,col,normal,obs,noobs,nolabel,or,coef,all,expected,unequal,asbalanced,robust,clear,plot,nofreq,chi2,exact,m,missing,listwise,pairwise,discrete,noout,plabel,mlabel,mlabangle,msymbol,twoway,range,scheme,mcolor,msize,mfcolor,mlcolor,mlabposition, mlabsize,mlabcolor,mlwidth,mlabgap,mlabv,connect,clwidth, clcolor,clpattern,cmissing,cols,legend,lab,name,hole,title,subtitle,ytitle,xtitle,size,xsize,ysize,scale,position,ring,bcolor,fcolor,ifcolor,lwidth,ilwidth,color,lcolor,ilcolor,blcolor,bmargin,linegap,note,caption,graphregion,plotregion,clean,wide,long,string,Long,Wide,option,comma,tab},
+    morecomment=[l]{//},
+    % morecomment=[l]{*},  % `*` maybe used as multiply operator. So use `//` as line comment.
+    morecomment=[s]{/*}{*/},
+    % morecomment=[s]{,}{//},
+    % The following is used by macros, like `lags'.
+    morecomment=[n][keywordstyle9]{`}{'},
+    morestring=[b]",
+    sensitive=true,
+    numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=5pt,
+}
+
+\lstdefinestyle{numbers}{
+    numbers=left,
+    stepnumber=1,
+    numberstyle=\tiny,
+    xleftmargin=2em,
+}
+\lstdefinestyle{nonumbers}{
+    numbers=none,
+}
+\lstdefinestyle{stata-plain}{
+    % comment slanted and keywords bolded.
+    language=Stata,
+    basicstyle=\setmonofont{Consolas}\footnotesize\ttfamily,
+}
+
+\definecolor{darkgreen}{rgb}{0.0, 0.44, 0.0}
+\definecolor{darkblue}{rgb}{0.0, 0.0, 0.55}
+\definecolor{mahogany}{rgb}{0.75, 0.25, 0.0}
+\definecolor{richcarmine}{rgb}{0.84, 0.0, 0.25}
+
+\lstdefinestyle{stata-editor}{
+    language=Stata,
+    % size of the fonts for the code
+    basicstyle=\setmonofont{Consolas}\footnotesize\ttfamily,
+    % Color settings to match do-file editor style
+    % Commands that are not included in the defination
+    keywordstyle={\color{darkblue}},
+    % Popular add-on commands
+    keywordstyle=[2]{\color{darkblue}},
+    % System commands
+    keywordstyle=[3]{\color{darkblue}},
+    % Keywords
+    keywordstyle=[4]{\color{magenta}},
+    % Built-in functions like rnormal
+    keywordstyle=[5]{\color{mahogany}},
+    % Used by macros, i.e. `lags'
+    keywordstyle=[9]{\color{TealBlue}},
+    stringstyle=\color{richcarmine},
+    commentstyle=\color{darkgreen},
+}
+
+\lstset{
+    language=Stata,
+    style=stata-editor,
+    % style=stata-editor,
+    style=numbers,
+    showstringspaces=false,
+    breaklines,
+    frame=single,
+    % To add missing commands
+    % morekeywords={xtreg, xtunitroot},
+}
+
+
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\graphicspath{{./graph/}}
+\usepackage{geometry}
+\geometry{
+            a4paper,
+            left=27mm,  %% or inner=23mm
+            right=27mm, %% or outer=18mm
+            top=25.4mm, bottom=25.4mm,
+            headheight=2.17cm,
+            headsep=4mm,
+            footskip=12mm
+}
+
+\hypersetup{
+            breaklinks,
+                   unicode,
+            bookmarksnumbered=true,
+            bookmarksopen=true,
+            colorlinks,
+            urlcolor=darkblue,
+            citecolor=magenta,
+            linkcolor=darkgreen,
+            plainpages=false,
+            pdfstartview=FitH,
+            pdfborder={0 0 0},
+            linktocpage
+}
+
+\usepackage[no-math,cm-default]{fontspec}
+% \defaultfontfeatures{Mapping=tex-text}
+\RequirePackage{xunicode}
+\RequirePackage{xltxtra}
+\setmainfont[Mapping=tex-text,Ligatures=TeX]{Adobe Garamond Pro} %  (\textrm)
+\setsansfont[Mapping=tex-text]{Myriad Pro} %  (\textsf)
+\setmonofont{Monaco}%Palatino Linotype
+%-中文字体设置-%
+\usepackage{xeCJK}
+\setlength{\parindent}{2em}
+\setCJKmainfont[BoldFont={方正黑体简体},ItalicFont={方正楷体简体}]{方正书宋简体}
+%方正书宋_GBK Adobe Song Std L华文中宋
+\setCJKsansfont[BoldFont={方正黑体简体},ItalicFont={方正楷体简体}]{方正中等线简体}
+\setCJKmonofont{微软雅黑Monaco}
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 1pt
+\newfontfamily\gara{Adobe Garamond Pro}
+\linespread{1.3}
+\title{\bfseries{\color{blue}Stata} {\color{magenta}Learning Notes}}
+\author{\Large\gara\itshape{{\color{blue}E}than {\color{magenta}D}eng} \\ Version 1.0}
+\usepackage{indentfirst}
+
+\begin{document}
+\maketitle
+\section{数据操作}
+\subsection{将 Excel 文件数据导入 Stata 的方法之比较}
+这一点可能也是大家在实证研究中遇到的最常见的问题，一般找来的数据都是 Excel 文件，但是要做计量肯定要导入到 Stata 中去。可能大多数菜鸟最常见的办法就是直接复制粘贴了，简单明了，不需要任何技术，但潜在的问题是如果数据比较多，拉框选择还是一件很麻烦的事情，有些数据在 Excel 中可能是显示小数点后两位，但实际储存的并不止这么多。如果是复制粘贴了，可能只粘贴过去小数点后两位，这样就损失了一部分精度。因此我不太推崇这种方法，就我的经验来看，直接调用 Stata 的内部数据导入命令会更好，起码不会丧失精度。Stata 数据导入的命令有以下几种，下面分别加以评析：
+
+\begin{enumerate}
+    \item \lstinline{insheet}
+
+\begin{lstlisting}
+insheet using filename, [option]
+\end{lstlisting}
+
+这个命令是专门用来导入像 Excel 之类的以电子表格形式存储的数据。在导入之前，首先要把 Excel 文件转存为 Stata 可以识别的格式。其中我最常用的就是另存为 csv 逗号分隔符格式。当然一个 xls 文件中会包含多个 sheets，但 csv 只能保存一个 sheet，在另存时 Excel会提示你是否只另存当前 sheet，并且有些功能会丧失掉，不管那么多，毕竟 csv 只是一个中介，直接点确定就行了。当然你在保存 csv 时最好让变量名位于第一行，这样 Stata 就好识别了。然后在 Stata 中使用 \lstinline{insheet} 读取 csv 文件，在 \lstinline{option} 中指定为 \lstinline{comma} 告诉 Stata 你读取的是 csv 文件。这种方法有个不足在于如果你的数据中包含中文而且里面含有逗号时，stata是无法区别这些逗号是数据中的逗号还是 csv 文件自己生成的逗号，因而会出现同一个变量的数据被拆散到两个变量的存储空间中。解决的办法是不要用逗号标示分隔符了，在 Excel 中另存为 txt (制表符分隔），这样就不会与逗号相混淆了。然后再在 \lstinline{insheet} 命令中在 \lstinline{option} 里指定是 \lstinline{tab}，就完事了。
+
+\item \lstinline{infile}
+\begin{lstlisting}
+infile using filename
+\end{lstlisting}
+
+这个 \lstinline{infile} 命令分两类，一种是处理固定格式（fixed format）的 txt 或 raw，另一种是处理自由格式（free format），两类文件的命令语法不太相同，适用的类型也有所不同，当然你在用这个命令里还需要定义一个 dictionary，这个 dictionary 是用来描述数据的组织方式的，需要自己根据要导入的数据文件自己编写代码，然后嵌套到数据文件txt的前面去，或者是单独地存为一个 dct 文件，并且告诉 Stata 你要导入的数据在保存在哪里。由于使用起来的学习成本比较高，用得也比较少。在此就不详解了，有需要的请自行 \lstinline{help infile}。
+
+\item \lstinline{xmluse}
+
+这个命令首先要把 xls 文件另存为 xml 格式，然后用 \lstinline{xmluse} 命令去读取，当然在读取时你也要在 \lstinline{option} 中声明你的 xml 文件是 Excel 保存的而不是 Stata 保存的，这样就不会弄错。这个命令相比于前面的 \lstinline{insheet} 的一大好处在于你不必为 xls 中的每个 sheet 单独另存为一个文件，而只需要整体另存一个 xml 格式就行了，在用 \lstinline{xmluse} 时在 \lstinline{option} 中告诉 Stata 从哪个 sheet 中的哪些 cell 中读取数据就行了。但是经本人的经验发现如果你的 xls 文件中如果有汉字的话，Stata 读取后对应的变量会出现乱码，这一点用 \lstinline{insheet} 就不会有这个问题。
+
+\item \lstinline{odbc}
+
+这个命令是专门读取数据库文件的，并且支持 SQL 命令，这样如果你的数据比较多的话，可以先用 SQL 语句进行筛选，然后而导入。当然这个命令也能导向excel文件，只是本人目前还没用过，在此也不详解了。
+
+\end{enumerate}
+
+\textbf{更新}：
+Stata12 可以用 \lstinline{import excel} 命令直接导入。Stata13 中 \lstinline{insheet} 已经被 \lstinline{import delimited} 取代："insheet has been superseded by import delimited.  insheet continues to work but, as of Stata 13, is no longer an official part of Stata."
+
+\textbf{补充}：可以用 Stat/Transfer 软件转换成 Stata 格式。
+\end{document}
+
