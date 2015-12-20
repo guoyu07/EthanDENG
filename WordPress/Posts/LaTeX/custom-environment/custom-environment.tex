@@ -1,0 +1,50 @@
+\documentclass{book}
+
+\usepackage{lipsum}
+\usepackage{mathpazo}
+
+\newcounter{exam}[chapter]
+\setcounter{exam}{0}
+\renewcommand{\theexam}{\thechapter.\arabic{exam}}
+
+ % % Method 1
+
+ % \newenvironment{example}[1][]{\refstepcounter{exam}\par\medskip\noindent%
+ %    \textbf{Example \theexam~ #1} \rmfamily}{\medskip}
+
+ % Method 2
+\usepackage{environ,tikz}
+\tikzstyle{title}=[right=10pt,fill=gray,text=green!50]
+\tikzstyle{context}=[thick,rectangle,draw=gray,inner sep=10pt, inner ysep=10pt]
+\NewEnviron{example}[1][{}]{%
+    \par
+    \centering
+    \addvspace{\medskipamount}%
+    \begin{tikzpicture}
+        \node[context](box){%
+            \begin{minipage}{0.93\textwidth}
+                \refstepcounter{exam}%
+                \BODY
+            \end{minipage}};
+        \node[title] at (box.north west){\textbf{Example \theexam\ #1}};
+    \end{tikzpicture}%
+    \par
+}
+
+\begin{document}
+
+\setcounter{chapter}{2}
+
+\begin{example}[First]\label{exam:1}
+    \lipsum[4]
+\end{example}
+
+\lipsum[2]
+
+\begin{example}[Second]\label{exam:2}
+    \lipsum[5]
+\end{example}
+
+Example~\ref{exam:1} and~\ref{exam:2} are the new environments!
+
+\end{document}

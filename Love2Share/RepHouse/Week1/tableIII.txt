@@ -1,0 +1,12 @@
+	(1)	(2)	(3)
+VARIABLES	logdGDP	logdGDP	logdGDP
+			
+logGDP65	0.0943*	-0.00424	-0.341***
+	(0.0496)	(0.0548)	(0.0785)
+Constant	-0.267	0.588	3.686***
+	(0.380)	(0.433)	(0.685)
+			
+Observations	98	75	22
+R-squared	0.036	0.000	0.485
+Standard errors in parentheses			
+*** p<0.01, ** p<0.05, * p<0.1			

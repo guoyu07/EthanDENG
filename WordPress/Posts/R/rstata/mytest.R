@@ -1,0 +1,6 @@
+data(swiss)
+attach(swiss)
+library(foreign)
+write.dta(swiss, "D:/swiss.dta")
+model <- lm(Fertility ~ Agriculture + Catholic)
+summary(model)

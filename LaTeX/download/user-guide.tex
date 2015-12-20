@@ -1,0 +1,324 @@
+%!TEX program = xelatex
+
+\documentclass{article}
+\usepackage{xcolor}
+\definecolor{god}{RGB}{184,134,11} %184,134,11
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+\usepackage{listings,relsize}
+\lstset{% general command to set parameter(s)
+language=R,
+basicstyle=\sffamily, % print whole listing small
+keywordstyle=\color{god},
+commentstyle=\color{gray}, % white comments
+stringstyle=\sffamily, % typewriter type for strings
+showstringspaces=false,
+numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=5pt, %
+frame=shadowbox,
+rulesepcolor=\color{gray},
+columns=fullflexible,
+morekeywords={pkgtest,url,index,filepre,urlpre,transform,ndigits,filetype,downloader,tdownloader,TRUE,FALSE}
+} %
+
+
+
+\usepackage{geometry}
+\geometry{
+            a4paper,
+            left=27mm,  %% or inner=23mm
+            right=27mm, %% or outer=18mm
+            top=25.4mm, bottom=25.4mm,
+            headheight=2.17cm,
+            headsep=4mm,
+            footskip=12mm
+}
+
+%%字体设置
+
+\usepackage[no-math,cm-default]{fontspec}
+\defaultfontfeatures{Mapping=tex-text}
+\RequirePackage{xunicode}
+\RequirePackage{xltxtra}
+\setmainfont[Ligatures=TeX]{Minion Pro} %  (\textrm)
+\setsansfont{Myriad Pro} %  (\textsf)
+\setmonofont{Monaco}%Palatino Linotype
+%-中文字体设置-%
+\usepackage{xeCJK}
+\setCJKmainfont[BoldFont={方正黑体简体},ItalicFont={方正楷体简体}]{方正书宋简体}
+%方正书宋_GBK Adobe Song Std L华文中宋
+\setCJKsansfont[BoldFont={方正黑体简体}]{方正中等线简体}
+\setCJKmonofont{微软雅黑Monaco}
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 1pt
+\newfontfamily\gara{Adobe Garamond Pro}
+\linespread{1.3}
+\title{\bfseries{\color{blue}Download}{\color{magenta}Helper} 用户手册}
+\author{\Large\gara\itshape{{\color{blue}E}than {\color{magenta}D}eng} \\ Version 2.0}
+\begin{document}
+\maketitle
+\section{功能介绍}
+
+本 R 文件（\href{http://stack.ddswhu.com/R/download/downloadhelper.R}{DownloadHelper.R} 简称 DH）主要功能是批量下载相近文件名或者有文件名列表的文件。原则上 DH 支持所有的文件格式，经过测试的文件类型有：\textsf{PDF} 文件， \textsf{Excel} 文件，\textsf{txt} 纯文本文件 ， \textsf{LaTeX} 文件，\textsf{R} 文件， \textsf{Matlab} 文件，\textsf{MP3} 文件。DH 定义了四个函数，用户只需要使用最外层的函数 downloader 或者 tdownloader 即可批量下载相似地址的文件。
+
+\section{函数说明}
+
+DH 定义了如下四个函数：
+
+\begin{itemize}
+    \item pkgtest：检测是否已经安装某个宏包，参数为宏包名（参数：字符常量 x）
+    \item transform：数值索引转换为统一位数格式（参数1：index；参数2：ndigits）
+    \item downloader：下载文件函数 1.0 版本，参数及示例见后文。
+    \item tdownloader：下载文件函数 2.0 版本，参数及示例见后文。
+\end{itemize}
+
+\subsection{pkgtest 函数说明}
+
+其中 \textsf{pkgtest} 函数用于检测宏包是否安装，如果没有，则进行安装。由于 DH 需要借助 \textsf{downloader} 宏包，所以在使用 \textsf{downloader} 之前需要检测宏包是否安装，用户不需要自行检查。\textsf{downloader} 函数会自动调用 \textsf{pkgtest} 函数。\textsf{pkgtest} 使用示例如下
+
+\begin{lstlisting}
+pkgtest("xtable")
+# output as follows
+[1] "The required packages have been installed"
+\end{lstlisting}
+
+\subsection{transform 函数说明}
+
+有时候我们可能会碰到如下形式的文件下载地址 \lstinline{~/chap002.pdf}，此地址文件索引包含的是 \lstinline{002} 而不是 \lstinline{2}。考虑到这种情况，我们定义了 \textsf{transform} 函数，用以把普通数字转换成统一位数（不够位数则补零）的数字格式，也即 \lstinline{2} 转化为 \lstinline{002}。这个函数有两个参数，分别为 \lstinline{index} 和 \lstinline{ndigits}，第一个参数表示需要转换的数字，也可以是向量。第二个参数是转换后数字的位数（也即转换后数字的长度，比如 002 位数为 3）。示例如下
+\begin{lstlisting}
+index <- 1:24
+transform(index,ndigits=3)
+# output as follows
+ [1] "001" "002" "003" "004" "005" "006" "007" "008" "009" "010" "011" "012"
+[13] "013" "014" "015" "016" "017" "018" "019" "020" "021" "022" "023" "024"
+\end{lstlisting}
+
+\subsection{downloader 函数说明}
+\begin{itemize}
+    \item urlpre：字符参数，下载文件网址不含文件名部分，必选参数；
+    \item index： 文件名索引，不含拓展名，必选参数，可以为字符向量或者数值向量；
+    \item transform：逻辑参数，补零转换，默认 \lstinline{transform = FALSE}；
+    \item ndigits：数值参数，总位数，比如需要得到 012，则 \lstinline{ndigits=3}，默认 \lstinline{ndigits = 2}；
+    \item filepre：字符参数，文件名前缀，比如 chap，默认为空；
+    \item filetype：字符参数，文件类型，文件拓展名，默认 \lstinline{filetype="pdf"}。
+\end{itemize}
+
+我们用一个例子来解释上面的参数。比如，现在要下载 \href{http://www.math.upenn.edu/~guffin/teaching/fall10/}{http://www.math.upenn.edu/~guffin/teaching/fall10/} 下 lectures 的课件，课件的地址为 \href{http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/lecture-01.pdf}{http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/lecture-01.pdf}，我们对这几个参数一一解释。
+
+\lstinline{urlpre} 是指下载文件地址中不含文件名部分，大部分情况下，都是最后一个斜杠的之前的内容（含斜杠）。在我们的这个例子中，\lstinline{urlpre = "http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/"}，
+
+\lstinline{index} 是指下载文件的文件名的索引，比如这里文件名分别为 01.pdf--32.pdf，则 \lstinline{index = 1:32}。当然，可能有时候并不是顺序，则可以使用向量表示。\lstinline{index} 可以为字符向量或者数值向量。字符向量比如 \lstinline{index = c("hello","rintro","fname-esim")}，也即文件名的一个列表（不含拓展名）。
+
+\lstinline{transform} 是个逻辑值参数，可选项有 \lstinline{TRUE} 和 \lstinline{FALSE}，前者表示进行数字格式转换，比如此例中，由于下载地址中是 \lstinline{01.pdf}，需要将 \lstinline{1} 转换成 \lstinline{01} 这种形式，所以这个例子中 \lstinline{transform = TRUE}。
+
+\lstinline{ndigits} 表示需要转换的位数，当然，只在 \lstinline{transform = TRUE} 时候才会生效。在我们这个例子中，由于索引转换之后为 \lstinline{01}，所以位数为 2，\lstinline{ndigits = 2}。默认地，
+
+\lstinline{filepre} 表示文件名前缀，字符参数，在我们这个例子中，文件名前缀参数为 \lstinline{filepre = "lecture-"}。
+
+\lstinline{filetype} 字符参数，表示文件类型，准确来说应该是文件名后缀，在本例中，\lstinline{filetype = "pdf"}，注意：必须要用双引号。
+
+综合起来，完整的例子如下
+\begin{lstlisting}
+source("downloadhelper.R")
+urlpre <- "http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/"
+index <- 2:4
+downloader(urlpre,index,ndigits=2,transform=TRUE,filepre="lecture-",filetype="pdf")
+\end{lstlisting}
+
+\subsection{tdownloader 函数说明}
+tdownloader 函数是 downloader 的升级版，本质上 tdownloader 使用 downloader 函数。使用 tdownloader 下载文件需要使用到两个参数，分别是 \lstinline{url} 和 \lstinline{index}。
+\begin{itemize}
+    \item url：文件下载示例网址，具有代表性的网址。
+    \item index：文件名索引，同 downloader 函数参数。
+\end{itemize}
+
+tdownloader 目前仅支持三类地址下载，见使用示例。
+
+\section{使用示例}
+\subsection{downloader 下载示例}
+\noindent\textbf{PDF 文件下载}\\
+相关网页：\href{http://www.math.upenn.edu/~guffin/teaching/fall10/}{http://www.math.upenn.edu/~guffin/teaching/fall10/}
+\begin{lstlisting}
+source("downloadhelper.R")
+urlpre <- "http://www.math.upenn.edu/~guffin/teaching/fall10/lectures/"
+index <- 2:4
+downloader(urlpre,index,ndigits=2,transform=TRUE,filepre="lecture-",filetype="pdf")
+\end{lstlisting}
+
+\noindent\textbf{R 文件下载}\\
+相关网页：\href{http://www.rni.helsinki.fi/~pek/r-koulutus/index.html}{http://www.rni.helsinki.fi/~pek/r-koulutus/index.html}
+
+\begin{lstlisting}
+source("downloadhelper.R")
+urlpre <- "http://www.rni.helsinki.fi/~pek/r-koulutus/"
+index <- c("hello","rintro","fname-esim")
+downloader(urlpre,index,filetype="R")
+\end{lstlisting}
+
+\noindent\textbf{txt 文件下载}\\
+相关网页：\href{http://www1.umn.edu/statsoft/doc/statnotes/}{http://www1.umn.edu/statsoft/doc/statnotes/}
+
+\begin{lstlisting}
+source("downloadhelper.R")
+urlpre <- "http://www1.umn.edu/statsoft/doc/statnotes/"
+index <- 1:8
+downloader(urlpre,index,transform=TRUE,ndigits=2,filepre="stat",filetype="txt")
+\end{lstlisting}
+
+\noindent\textbf{\LaTeX{} 文件下载}\\
+相关网页： \href{https://gitorious.org/pkuthss/pkuthss/source/1bb0c28e36e7ddb7d6db0009a1d154e1e3ef4c6c:doc/chap}{https://gitorious.org/pkuthss/pkuthss/}
+
+\begin{lstlisting}
+source("downloadhelper.R")
+urlpre <- "https://gitorious.org/pkuthss/pkuthss/raw/1bb0c28e36e7ddb7d6db000
+          9a1d154e1e3ef4c6c:doc/chap/"
+index <- 1:3
+downloader(urlpre,index,filetype="tex",filepre="chap")
+\end{lstlisting}
+
+\noindent\textbf{Excel 表格下载}\\
+相关网页：\href{http://www.pbc.gov.cn/publish/html/kuangjia.htm?id=2012s07.htm}{http://www.pbc.gov.cn/publish/html/}
+\begin{lstlisting}
+source("downloadhelper.R")
+urlpre <- "http://www.pbc.gov.cn/publish/html/"
+index <- 5:8
+downloader(urlpre,index,transform=TRUE,filetype="xls",filepre="2012s")
+\end{lstlisting}
+
+\noindent\textbf{Matlab m 文件下载}\\
+相关网页：\href{http://www.rni.helsinki.fi/~pek/software.html}{http://www.rni.helsinki.fi/~pek/software.html}
+
+\begin{lstlisting}
+source("downloadhelper.R")
+urlpre <- "http://www.rni.helsinki.fi/~pek/software/smoothing/"
+index <- c("llrev","llrcvev","llrssev","llrrev","llrrcvev","llrrssev","knnev","knncvev","knnssev","demo")
+downloader(urlpre,index,filetype="m")
+\end{lstlisting}
+
+
+\noindent \textbf{MP3 文件下载}\\
+相关网页：\href{http://download.dogwood.com.cn/online/grechjx/index.html}{http://download.dogwood.com.cn/online/grechjx/index.html}
+
+\begin{lstlisting}
+source("downloadhelper.R")
+urlpre <- "http://download.dogwood.com.cn/online/grechjx/"
+urlindex <- 4:6
+downloader(urlpre,index,ndigits=2,transform=TRUE,filepre="WordList",filetype="mp3")
+\end{lstlisting}
+
+
+\subsection{tdownloader 下载示例}
+
+\noindent \textbf{索引类型 1：常规字符文件列表}
+\begin{lstlisting}
+source("downloadhelper.R")
+url <- "http://www.rni.helsinki.fi/~pek/software/smoothing/llrev.m"
+index <- c("llrev","llrcvev","llrssev","llrrev","llrrcvev","llrrssev","knnev","knncvev","knnssev","demo")
+tdownloader(url,index)
+\end{lstlisting}
+
+\noindent \textbf{索引类型 2：含字符+常规数字文件}
+\begin{lstlisting}
+url <- "https://gitorious.org/pkuthss/pkuthss/source/1bb0c28e36e7ddb7d6db0009a1d154e1e3ef4c6c
+       :doc/chap/chap1.tex"
+index <- 1:3
+tdownloader(url,index)
+\end{lstlisting}
+
+\noindent \textbf{索引类型 3：含字符+统一格式数字文件}
+\begin{lstlisting}
+source("downloadhelper.R")
+url <- "http://www1.umn.edu/statsoft/doc/statnotes/stat01.txt"
+index <- 1:8
+tdownloader(url,index)
+\end{lstlisting}
+
+\section{更新日志}
+
+\begin{itemize}
+    \item 2014-09-06：创立文件，内含 \lstinline{pkgtest\transform\downloader} 函数
+    \item 2014-09-07：新增 tdownloader 函数，减少 4 个参数（皈颖协助）。
+    \item 2014-09-15：增加中文 PDF 说明。
+\end{itemize}
+\newpage
+\section{源码}
+\begin{lstlisting}
+# Copy Right by Ethan Deng (http://ddswhu.com)
+# Email: ddswhu@gmail.com
+# Last Modification: 2014-9-15
+# deteck whether the downloader pkg has been installed
+# if not, then install the pkg
+# otherwise, return the information that the pkg is not installed
+pkgtest <- function(x="downloader") {
+    if (x %in% rownames(installed.packages()) == FALSE){
+        install.packages(x)
+    } else {print("The required packages have been installed")}
+}
+
+# transform the number index to special character
+# index which has the same number of digits
+# Example: 1:13 -> 01-09,10,11,12,13
+transform <- function(index,ndigits=2){
+    nullnum <- 10^{ndigits}
+    cindex <- as.character(index + nullnum)
+    dindex <- substr(cindex,2,ndigits+2)
+    return(dindex)
+}
+
+downloader <- function(urlpre, index, transform=FALSE , ndigits = 2, filepre = "", filetype = "pdf") {
+    # test whether the pkg is installed
+    # load the pkg
+    pkgtest("downloader")
+    library(downloader)
+    # If the transform is set to be TRUE and class of index
+    # is not character, then the dindex should be transformed
+    # using transform function defined
+    if (transform == TRUE & !class(index) == "character"){
+        dindex <- transform(index,ndigits)
+    } else {
+        dindex <- index
+    }
+    # sometimes, we have filepre such as "chap" or "chapter"
+    # filetype can be "pdf","csv","xlsx","mp3"
+    fileindex <- paste(filepre,dindex,".",filetype,sep="")
+
+    # to create the full path of the files
+    # urlpre indicates the url prefix
+    urlindex <- paste(urlpre,fileindex,sep="")
+
+    # binary files and text file list
+    textfilelist <- c("csv","txt","R","tex","r","m")
+
+    # mode is set to be "w" short for write(default)
+    # if the file is text files, then it should be set
+    # to be wb, short for write binary files
+    if (filetype %in% textfilelist == FALSE){
+        mode <- "wb"
+    } else {
+        mode <- "w"
+    }
+
+    # download process
+    for (i in 1:length(index)) {
+         download(url = urlindex[i], destfile = fileindex[i], mode = mode)
+    }
+}
+
+tdownloader <- function(url,index){
+    medfile <- strsplit(url,"\\/",fixed=FALSE)
+    finalfile <- medfile[[1]][length(medfile[[1]])]
+    urlpre <- substr(url,1,nchar(url)-nchar(finalfile)) # option 1
+    filesplit <- strsplit(finalfile,"\\.",fixed=F)[[1]]
+    filetype <- filesplit[2] # option 6
+    fchar <- strsplit(filesplit[1],"[0-9]+",fixed=F)
+    filepre <- ifelse(is.numeric(index), fchar[[1]], "")
+     # option 5
+    fnum <- strsplit(filesplit[1],"[a-z|A-Z]*",fixed=F)
+    fnumb <- substr(filesplit[1],nchar(fchar[[1]])+1,nchar(fchar[[1]])+length(fnum[[1]])-1)
+    transform <- !nchar(fnumb)==nchar(as.numeric(fnumb)) # option 3
+    ndigits <- nchar(fnumb) # option 4
+    downloader(urlpre,index,transform,ndigits,filepre,filetype)
+}
+\end{lstlisting}
+
+\end{document}

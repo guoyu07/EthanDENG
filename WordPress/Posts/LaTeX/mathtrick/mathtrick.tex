@@ -1,0 +1,68 @@
+%!TEX program = pdflatex
+\documentclass{article}
+\usepackage{times}
+\usepackage{amsmath}
+
+\newcommand{\fab}{\frac{a}{b}}
+
+\begin{document}
+
+% case1
+\begin{equation*}
+(\fab), \big(\fab\big),\Big(\fab\Big),\bigg(\fab\bigg),\Bigg(\fab\Bigg),\left(\fab\right)
+\end{equation*}
+
+\vskip 1cm
+
+% case2
+\begin{equation*}
+\bigg[\sum x\bigg]^{2},
+\left[\sum x \right]^{2},
+\bigg[\sum_{j} x \bigg]^{2},
+\left[\sum_{j} x \right]^{2}.
+\end{equation*}
+
+\vskip 1cm
+
+% case3
+\begin{equation*}
+\left[(a+b)-c\right],\big[(a+b)-c\big]
+\end{equation*}
+
+\vskip 1cm
+
+% case4
+\begin{minipage}{0.45\textwidth}
+\begin{gather*}
+          -3p \geq x \geq -n\\
+            p \geq x \geq -n
+\end{gather*}
+\end{minipage}
+\hfil
+\begin{minipage}{0.45\textwidth}
+\begin{gather*}
+          -3p \geq x \geq -n\\
+\phantom{-3}p \geq x \geq -n
+\end{gather*}
+\end{minipage}
+
+\vskip 1cm
+
+Then we have the series $A_{1},A_{2},\dotsc,A_{n}$, the original sum $A_{1}+A_{2}+\dotsb+A_{n}$, the orthogonal product $A_{1} A_{2}\dotsm A_{n}$, and the infinite integral
+\begin{equation*}
+\int_{A_{1}}\int_{A_{2}} \dotsi \int_{A_{n}}
+\end{equation*}
+
+\vskip 1cm
+
+\begin{equation*}
+\int_{a}^{b}           \quad
+\mathop{\int}_{a}^{b}  \quad
+\int\limits_{a}^{b}    \quad
+\intop_{a}^{b}         \quad
+\intop\nolimits_{a}^{b}
+\end{equation*}
+
+\end{document}
+
+

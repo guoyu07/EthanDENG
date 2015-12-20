@@ -1,0 +1,184 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+
+body{
+  color:#444;
+  font-family:Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman',
+              "Hiragino Sans GB", "STXihei", "微软雅黑", serif;
+  font-size:12px;
+  line-height:1.5em;
+  background:#fefefe;
+  width: 45em;
+  margin: 10px auto;
+  padding: 1em;
+  outline: 1300px solid #FAFAFA;
+}
+
+a{ color: #0645ad; text-decoration:none;}
+a:visited{ color: #0b0080; }
+a:hover{ color: #06e; }
+a:active{ color:#faa700; }
+a:focus{ outline: thin dotted; }
+a:hover, a:active{ outline: 0; }
+
+span.backtick {
+  border:1px solid #EAEAEA;
+  border-radius:3px;
+  background:#F8F8F8;
+  padding:0 3px 0 3px;
+}
+
+::-moz-selection{background:rgba(255,255,0,0.3);color:#000}
+::selection{background:rgba(255,255,0,0.3);color:#000}
+
+a::-moz-selection{background:rgba(255,255,0,0.3);color:#0645ad}
+a::selection{background:rgba(255,255,0,0.3);color:#0645ad}
+
+p{
+margin:1em 0;
+}
+
+img{
+max-width:100%;
+}
+
+h1,h2,h3,h4,h5,h6{
+font-weight:normal;
+color:#111;
+line-height:1em;
+}
+h4,h5,h6{ font-weight: bold; }
+h1{ font-size:2.5em; }
+h2{ font-size:2em; border-bottom:1px solid silver; padding-bottom: 5px; }
+h3{ font-size:1.5em; }
+h4{ font-size:1.2em; }
+h5{ font-size:1em; }
+h6{ font-size:0.9em; }
+
+blockquote{
+color:#666666;
+margin:0;
+padding-left: 3em;
+border-left: 0.5em #EEE solid;
+}
+hr { display: block; height: 2px; border: 0; border-top: 1px solid #aaa;border-bottom: 1px solid #eee; margin: 1em 0; padding: 0; }
+
+
+pre , code, kbd, samp { 
+  color: #000; 
+  font-family: monospace; 
+  font-size: 0.88em; 
+  border-radius:3px;
+  background-color: #F8F8F8;
+  border: 1px solid #CCC; 
+}
+pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; padding: 5px 12px;}
+pre code { border: 0px !important; padding: 0;}
+code { padding: 0 3px 0 3px; }
+
+b, strong { font-weight: bold; }
+
+dfn { font-style: italic; }
+
+ins { background: #ff9; color: #000; text-decoration: none; }
+
+mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
+
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+ul, ol { margin: 1em 0; padding: 0 0 0 2em; }
+li p:last-child { margin:0 }
+dd { margin: 0 0 0 2em; }
+
+img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+td { vertical-align: top; }
+
+@media only screen and (min-width: 480px) {
+body{font-size:14px;}
+}
+
+@media only screen and (min-width: 768px) {
+body{font-size:16px;}
+}
+
+@media print {
+  * { background: transparent !important; color: black !important; filter:none !important; -ms-filter: none !important; }
+  body{font-size:12pt; max-width:100%; outline:none;}
+  a, a:visited { text-decoration: underline; }
+  hr { height: 1px; border:0; border-bottom:1px solid black; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
+  pre, blockquote { border: 1px solid #999; padding-right: 1em; page-break-inside: avoid; }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page :left { margin: 15mm 20mm 15mm 10mm; }
+  @page :right { margin: 15mm 10mm 15mm 20mm; }
+  p, h2, h3 { orphans: 3; widows: 3; }
+  h2, h3 { page-break-after: avoid; }
+}
+</style><title>draw-on-image</title></head><body><h2 id="问题提出">问题提出</h2>
+<p>这个问题是一个非常常用的需求，假设现在我们手上有一张图片，比如 Matlab 或者 Stata 或者其他一些软件的图片，要去找源代码进行修改以补充对图片的解释性编辑（比如添加向量、数学符号，或者条条框框啥的）是很繁琐的过程，或者可能图片根本找不到源代码，这个时候我们可能想到的方法是 Illustrator 等矢量编辑软件，在图上加以编辑修改。本文提供使用 TikZ 对图片进行修改的方法，代码简单而且非常好用，安全无副作用！</p>
+<h2 id="问题解决">问题解决</h2>
+<p>本问题在 <a href="file://E:\Sola\markdown\draw-on-image/(http://tex.stackexchange.com/users/83/caramdir)" title="Caramdir">Caramdir</a> 和 <a href="file://E:\Sola\markdown\draw-on-image/(http://tex.stackexchange.com/users/2552/jake)" title="Jake">Jake</a> 智慧下完美的解决了，谢谢他们！</p>
+<h3 id="初步实现">初步实现</h3>
+<p><a href="file://E:\Sola\markdown\draw-on-image/(http://tex.stackexchange.com/users/83/caramdir)" title="Caramdir">Caramdir</a> 提供了一种方法，就是将插图命令放在 node 中，然后在上面画图，其中图片的左下角为坐标系的原点，坐标系为绝对坐标（与 TikZ  中坐标一致），代码如下：</p>
+<pre><code>\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=\textwidth]{some_image.jpg}};
+    \draw[red,ultra thick,rounded corners] (7.5,5.3) rectangle (9.4,6.2);
+\end{tikzpicture}
+</code></pre>
+<p>这个方法虽然用简单的命令就实现了我们想要的需求，但是却有两个非常伤的缺点：</p>
+<ul>
+<li>作图命令用到的点的坐标怎么定？一点一点尝试修改？</li>
+<li>如果我们对图片进行了缩放（横向、纵向缩放），我们之前的坐标也不准确了。</li>
+</ul>
+<h3 id="更进一步">更进一步</h3>
+<p><a href="file://E:\Sola\markdown\draw-on-image/(http://tex.stackexchange.com/users/83/caramdir)" title="Caramdir">Caramdir</a> 为了解决第二个问题提出了如下方法：</p>
+<pre><code>\begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=0.9\textwidth]{some_image.jpg}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+        \draw[red,ultra thick,rounded corners] (0.62,0.65) rectangle (0.78,0.75);
+    \end{scope}
+\end{tikzpicture}
+</code></pre>
+<p>也就是新建了一个相对坐标系，图片的左下角（sourth west）为坐标原点 (0,0)，图片的右上角（north east）为 (1,1)，这样我们在引用图片上的点就可以用相对坐标了，缩放对坐标并不影响标记点所在位置。</p>
+<p>在这样的处理下，第一个仍然没有解决。</p>
+<h3 id="完美方案">完美方案</h3>
+<p>为解决在图片上确定点坐标的问题，<a href="file://E:\Sola\markdown\draw-on-image/(http://tex.stackexchange.com/users/2552/jake)" title="Jake">Jake</a> 提出了非常机智的解决方案，在图片上画网格线，在我们插图之后把相对坐标系彻底画出来，这样，对于上面的某个点我们不再需要一点点修改，<a href="file://E:\Sola\markdown\draw-on-image/(http://tex.stackexchange.com/users/2552/jake)" title="Jake">Jake</a> 的代码如下：</p>
+<pre><code>\draw[help lines,xstep=.1,ystep=.1] (0,0) grid (1,1);
+\foreach \x in {0,1,...,9} { \node [anchor=north] at (\x/10,0) {0.\x}; }
+\foreach \y in {0,1,...,9} { \node [anchor=east] at (0,\y/10) {0.\y}; }
+</code></pre>
+<p>我们使用网络上的一张图片作为样图（<a href="file://E:\Sola\markdown\draw-on-image/(http://upload.wikimedia.org/wikipedia/commons/1/16/Mycena_interrupta.jpg)" title="Sample JPG">Mycena_interrupta.jpg</a>），结合之前 <a href="file://E:\Sola\markdown\draw-on-image/(http://tex.stackexchange.com/users/83/caramdir)" title="Caramdir">Caramdir</a> 的方法，最终的完整代码如下：</p>
+<pre><code> %!TEX program = pdflatex
+
+\documentclass[tikz]{standalone}
+
+\usepackage{mathpazo,graphicx}
+
+\begin{document}
+
+\begin{tikzpicture}
+    % 引入图片
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=0.9\textwidth]{Mycena_interrupta.jpg}};
+
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+        % 建立相对坐标系
+        \draw[help lines,xstep=.1,ystep=.1] (0,0) grid (1,1);
+        \foreach \x in {0,1,...,9} { \node [anchor=north] at (\x/10,0) {0.\x}; }
+        \foreach \y in {0,1,...,9} { \node [anchor=east] at (0,\y/10) {0.\y}; }
+        % 作图命令
+        \draw[red, ultra thick, rounded corners] (0.62,0.65) rectangle (0.78,0.75);
+    \end{scope}
+\end{tikzpicture}
+
+\end{document}
+</code></pre>
+<p>效果如下：
+ <img alt="效果图" src="file://E:\Sola\markdown\draw-on-image/(http://elegantlatex.org/wp-content/uploads/2014/07/overlay.png)" title="overlay 效果图" /></p>
+<p>我们建坐标系的目的是为了得到点的坐标，得到点的坐标之后我们可以把建立坐标系的命令删除，这样就完美解决了，Cheers！</p>
+<p>原帖地址：<a href="http://tex.stackexchange.com/questions/9559/drawing-on-an-image-with-tikz">http://tex.stackexchange.com/questions/9559/drawing-on-an-image-with-tikz</a></p></body></html>

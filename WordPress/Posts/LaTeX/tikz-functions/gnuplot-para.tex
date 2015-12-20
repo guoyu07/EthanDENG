@@ -1,0 +1,18 @@
+\documentclass[border=4pt]{standalone}
+
+\usepackage{mathpazo}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.8}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \begin{axis}[axis x line = middle,
+                 axis y line = middle,
+                 xmin=-20,xmax=30,
+                 ymin=-350,ymax=70]
+    \addplot[domain=-12:26,color=orange,very thick,smooth] gnuplot {14*x-x^2};
+    \end{axis}
+\end{tikzpicture}
+
+\end{document}
